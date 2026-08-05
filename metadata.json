@@ -1,0 +1,6 @@
+{
+  "name": "YashoWorld - Handcrafted Resin Art & Memory Preservation",
+  "description": "Luxury 3D portfolio and e-commerce experience for YashoWorld handmade resin art, flower preservation, wedding memory frames, and bespoke keepsakes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
