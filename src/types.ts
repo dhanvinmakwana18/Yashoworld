@@ -1,5 +1,6 @@
 export type ProductCategory =
   | 'All'
+  | 'Pooja Thalis'
   | 'Memory Frames'
   | 'Flower Preservation'
   | 'Wedding Keepsakes'

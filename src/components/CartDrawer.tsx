@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SafeImage } from './SafeImage';
 import {
   X,
   ShoppingBag,
@@ -54,7 +55,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     const itemsList = cartItems
       .map(
         (i) =>
-          `• ${i.product.name} (Qty: ${i.quantity}) - $${i.product.price * i.quantity}${
+          `• ${i.product.name} (Qty: ${i.quantity}) - ₹${i.product.price * i.quantity}${
             i.customizationDetails?.names ? ` [Text: ${i.customizationDetails.names}]` : ''
           }`
       )
@@ -64,9 +65,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
 ${itemsList}
 
-Subtotal: $${subtotal}
-${discountApplied ? 'Discount (YASHO10): -$10%' : ''}
-Total Estimated Amount: $${totalPrice}
+Subtotal: ₹${subtotal}
+${discountApplied ? 'Discount (YASHO10): -10%' : ''}
+Total Estimated Amount: ₹${totalPrice}
 
 Please share payment options and flower courier shipping instructions!`;
 
@@ -131,10 +132,9 @@ Please share payment options and flower courier shipping instructions!`;
                     key={item.product.id}
                     className="glass-panel p-3.5 rounded-2xl border border-white/80 dark:border-[#D4AF37]/20 flex gap-3 relative shadow-sm"
                   >
-                    <img
+                    <SafeImage
                       src={item.product.image}
                       alt={item.product.name}
-                      referrerPolicy="no-referrer"
                       className="w-20 h-20 rounded-xl object-cover border border-[#D4AF37]/30"
                     />
 
@@ -155,7 +155,7 @@ Please share payment options and flower courier shipping instructions!`;
 
                       <div className="flex items-center justify-between mt-2">
                         <span className="font-serif-display text-sm font-bold text-[#2A2421] dark:text-[#F5EFE6]">
-                          ${item.product.price * item.quantity}
+                          ₹{item.product.price * item.quantity}
                         </span>
 
                         <div className="flex items-center gap-2 bg-[#E8D8C4]/30 dark:bg-[#12100E] px-2 py-1 rounded-lg">
@@ -211,7 +211,7 @@ Please share payment options and flower courier shipping instructions!`;
                 {discountApplied && (
                   <div className="flex items-center justify-between text-xs text-emerald-600 font-semibold">
                     <span>YASHO10 Promo Applied (10% Off)</span>
-                    <span>-${discountAmount.toFixed(2)}</span>
+                    <span>-₹{discountAmount.toFixed(0)}</span>
                   </div>
                 )}
 
@@ -219,7 +219,7 @@ Please share payment options and flower courier shipping instructions!`;
                 <div className="space-y-1.5 pt-2 border-t border-[#D4AF37]/15">
                   <div className="flex items-center justify-between text-xs text-[#6B5E55] dark:text-[#C4B8AD]">
                     <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>₹{subtotal.toFixed(0)}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-[#6B5E55] dark:text-[#C4B8AD]">
                     <span>Wooden Gift Box Packaging</span>
@@ -228,7 +228,7 @@ Please share payment options and flower courier shipping instructions!`;
                   <div className="flex items-center justify-between text-base font-bold text-[#2A2421] dark:text-[#F5EFE6] pt-1">
                     <span>Total Amount</span>
                     <span className="font-serif-display text-xl text-gold-gradient">
-                      ${totalPrice.toFixed(2)}
+                      ₹{totalPrice.toFixed(0)}
                     </span>
                   </div>
                 </div>

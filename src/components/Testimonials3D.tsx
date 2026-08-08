@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SafeImage } from './SafeImage';
 import { Sparkles, Star, ChevronLeft, ChevronRight, Quote, Heart } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '../data/testimonials';
 
@@ -58,12 +59,9 @@ export const Testimonials3D: React.FC = () => {
               <Quote className="absolute top-6 right-8 w-20 h-20 text-[#D4AF37]/15 pointer-events-none" />
 
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
-                <img
-                  src={currentTestimonial.avatar}
-                  alt={currentTestimonial.author}
-                  referrerPolicy="no-referrer"
-                  className="w-20 h-20 rounded-2xl object-cover border-2 border-[#D4AF37] shadow-lg"
-                />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8B5E3C] to-[#D4AF37] text-white flex items-center justify-center font-serif-display text-2xl font-bold shadow-lg border-2 border-[#D4AF37] shrink-0">
+                  {currentTestimonial.author.split(' ').map((n: string) => n[0]).join('')}
+                </div>
 
                 <div className="text-center sm:text-left">
                   <div className="flex items-center justify-center sm:justify-start gap-1 text-[#D4AF37] mb-2">
@@ -95,13 +93,15 @@ export const Testimonials3D: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
-                    className="p-2.5 rounded-full glass-gold hover:bg-[#D4AF37] hover:text-white transition-colors"
+                    aria-label="Previous Testimonial"
+                    className="p-2.5 rounded-full glass-gold hover:bg-[#D4AF37] hover:text-white transition-colors focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="p-2.5 rounded-full glass-gold hover:bg-[#D4AF37] hover:text-white transition-colors"
+                    aria-label="Next Testimonial"
+                    className="p-2.5 rounded-full glass-gold hover:bg-[#D4AF37] hover:text-white transition-colors focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -111,12 +111,15 @@ export const Testimonials3D: React.FC = () => {
           </AnimatePresence>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center items-center gap-2 mt-8">
+          <div className="flex justify-center items-center gap-2 mt-8" role="tablist" aria-label="Testimonial slides">
             {TESTIMONIALS_DATA.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                aria-label={`Go to testimonial slide ${idx + 1}`}
+                aria-selected={currentIndex === idx}
+                role="tab"
+                className={`w-2.5 h-2.5 rounded-full transition-all focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37] ${
                   currentIndex === idx ? 'w-8 bg-[#D4AF37]' : 'bg-[#E8D8C4] dark:bg-[#2A2421]'
                 }`}
               />

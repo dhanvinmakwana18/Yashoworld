@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SafeImage } from './SafeImage';
 import {
   X,
   Star,
@@ -75,13 +76,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           {/* Left Column: Image Gallery */}
           <div className="p-6 bg-[#F5EFE6] dark:bg-[#12100E] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20">
             <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/80 dark:border-[#D4AF37]/30 shadow-lg mb-4">
-              <img
+              <SafeImage
                 src={images[activeImageIndex]}
                 alt={product.name}
-                referrerPolicy="no-referrer"
+                priority={true}
                 className="w-full h-full object-cover"
               />
-              <span className="absolute top-3 left-3 px-3 py-1 rounded-full glass-gold text-[#8B5E3C] dark:text-[#E5C158] text-[10px] font-bold uppercase">
+              <span className="absolute top-3 left-3 px-3 py-1 rounded-full glass-gold text-[#8B5E3C] dark:text-[#E5C158] text-[10px] font-bold uppercase z-10">
                 {product.resinClarity}
               </span>
             </div>
@@ -97,7 +98,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       activeImageIndex === idx ? 'border-[#D4AF37] scale-105 shadow-md' : 'border-transparent opacity-70'
                     }`}
                   >
-                    <img src={img} alt="Thumbnail" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    <SafeImage src={img} alt="Thumbnail" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -125,11 +126,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="font-serif-display text-3xl font-bold text-[#2A2421] dark:text-[#F5EFE6]">
-                  ${product.price}
+                  ₹{product.price}
                 </span>
                 {product.originalPrice && (
                   <span className="text-sm text-[#6B5E55] dark:text-[#C4B8AD] line-through">
-                    ${product.originalPrice}
+                    ₹{product.originalPrice}
                   </span>
                 )}
               </div>

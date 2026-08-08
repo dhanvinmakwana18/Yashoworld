@@ -14,6 +14,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { CustomizerSelection } from '../types';
+const foreverRoseBookmarkImg = '/images/gallery/forever_rose_bookmark_real.jpg';
 
 interface CustomizerModalProps {
   isOpen: boolean;
@@ -33,34 +34,35 @@ export const InteractiveCustomizerModal: React.FC<CustomizerModalProps> = ({
     memoryItems: ['Dried Wedding Garland Flowers', 'LED Base Lights'],
     goldFoil: 'Full Golden Leaf Flakes',
     engravingText: 'Aarav & Priya • 14.02.2026',
-    estimatedPrice: 165,
+    estimatedPrice: 1499,
   });
 
   const [activeTab, setActiveTab] = useState<'shape' | 'size' | 'base' | 'items' | 'foil' | 'engraving'>('shape');
   const [copiedSuccess, setCopiedSuccess] = useState(false);
 
-  // Price Calculation Logic
+  // Price Calculation Logic (INR ₹750 - ₹2499)
   const recalculatePrice = (updated: CustomizerSelection) => {
-    let basePrice = 120;
+    let basePrice = 999;
 
     // Size multiplier
-    if (updated.size === '8x8 Inches') basePrice = 120;
-    if (updated.size === '10x10 Inches') basePrice = 155;
-    if (updated.size === '12x12 Inches') basePrice = 195;
-    if (updated.size === '15x15 Inches Grand') basePrice = 250;
+    if (updated.size === '8x8 Inches') basePrice = 999;
+    if (updated.size === '10x10 Inches') basePrice = 1499;
+    if (updated.size === '12x12 Inches') basePrice = 1899;
+    if (updated.size === '15x15 Inches Grand') basePrice = 2199;
 
     // Base Wood
-    if (updated.baseWood === 'Golden Brass Trim') basePrice += 20;
-    if (updated.baseWood === 'White Italian Marble') basePrice += 30;
+    if (updated.baseWood === 'Golden Brass Trim') basePrice += 100;
+    if (updated.baseWood === 'White Italian Marble') basePrice += 150;
 
-    // Items
-    basePrice += updated.memoryItems.length * 10;
+    // Memory Items
+    basePrice += updated.memoryItems.length * 50;
 
     // Gold foil
-    if (updated.goldFoil === 'Full Golden Leaf Flakes') basePrice += 15;
-    if (updated.goldFoil === 'Rose Gold Accent') basePrice += 15;
+    if (updated.goldFoil === 'Full Golden Leaf Flakes') basePrice += 50;
+    if (updated.goldFoil === 'Rose Gold Accent') basePrice += 50;
 
-    return basePrice;
+    // Cap at max 2499
+    return Math.min(basePrice, 2499);
   };
 
   const handleUpdate = (key: keyof CustomizerSelection, value: any) => {
@@ -126,7 +128,7 @@ export const InteractiveCustomizerModal: React.FC<CustomizerModalProps> = ({
 • Memory Items: ${selection.memoryItems.join(', ')}
 • Gold Foil: ${selection.goldFoil}
 • Engraving: ${selection.engravingText || 'None'}
-• Estimated Quote: $${selection.estimatedPrice}
+• Estimated Quote: ₹${selection.estimatedPrice}
 
 Please confirm flower shipping details!`;
     return `https://wa.me/919876543210?text=${encodeURIComponent(text)}`;
@@ -151,23 +153,23 @@ Please confirm flower shipping details!`;
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-5xl glass-panel rounded-3xl border border-[#D4AF37]/40 shadow-2xl overflow-hidden z-10 my-auto flex flex-col lg:flex-row max-h-[90vh]"
+          className="relative w-full max-w-5xl glass-panel rounded-3xl border border-[#D4A373]/40 shadow-2xl overflow-hidden z-10 my-auto flex flex-col lg:flex-row max-h-[90vh]"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-30 p-2 rounded-full glass-panel hover:bg-white dark:hover:bg-[#2A2421] text-[#2A2421] dark:text-[#F5EFE6] shadow-md"
+            className="absolute top-4 right-4 z-30 p-2 rounded-full glass-panel hover:bg-white dark:hover:bg-[#2B231F] text-[#2D2421] dark:text-[#FAF7F2] shadow-md"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Left Column: Live 3D Preview Stage */}
-          <div className="lg:w-1/2 p-6 sm:p-8 bg-gradient-to-br from-[#FFF8F0] to-[#E8D8C4]/50 dark:from-[#12100E] dark:to-[#1C1815] flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20 relative overflow-hidden">
+          <div className="lg:w-1/2 p-6 sm:p-8 bg-gradient-to-br from-[#FAF7F2] to-[#F8E8EE]/50 dark:from-[#231C18] dark:to-[#2B231F] flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-[#D4A373]/20 relative overflow-hidden">
             <div className="w-full text-center lg:text-left mb-4">
-              <span className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-widest">
+              <span className="text-[11px] font-bold text-[#D4A373] dark:text-[#D8B4E2] uppercase tracking-widest">
                 Interactive 3D Preview
               </span>
-              <h3 className="font-serif-display text-2xl font-bold text-[#2A2421] dark:text-[#F5EFE6]">
+              <h3 className="font-serif-display text-2xl font-bold text-[#2D2421] dark:text-[#FAF7F2]">
                 Your Bespoke Resin Keepsake
               </h3>
             </div>
@@ -175,15 +177,15 @@ Please confirm flower shipping details!`;
             {/* Simulated 3D Shape Preview Box */}
             <div className="relative w-64 h-64 sm:w-72 sm:h-72 my-6 flex items-center justify-center perspective-1000">
               {/* Floating Glow Halo */}
-              <div className="absolute inset-0 bg-[#D4AF37]/20 rounded-full blur-2xl animate-pulse-glow" />
+              <div className="absolute inset-0 bg-[#D4A373]/20 rounded-full blur-2xl animate-pulse-glow" />
 
               {/* Dynamic Shape Container */}
               <div
-                className="w-56 h-56 sm:w-64 sm:h-64 relative transition-all duration-500 shadow-2xl flex items-center justify-center p-6 border-2 border-white/80 dark:border-[#D4AF37]/50 overflow-hidden"
+                className="w-56 h-56 sm:w-64 sm:h-64 relative transition-all duration-500 shadow-2xl flex items-center justify-center p-6 border-2 border-white/80 dark:border-[#D4A373]/50 overflow-hidden"
                 style={{
                   clipPath: shapes.find((s) => s.name === selection.shape)?.path,
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(245,239,230,0.65) 100%)',
-                  boxShadow: '0 25px 50px rgba(139, 94, 60, 0.2), inset 0 0 20px rgba(212,175,55,0.3)',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,232,238,0.75) 100%)',
+                  boxShadow: '0 25px 50px rgba(212, 163, 115, 0.25), inset 0 0 20px rgba(212,163,115,0.3)',
                 }}
               >
                 {/* Simulated Foil Flakes */}
@@ -193,13 +195,13 @@ Please confirm flower shipping details!`;
 
                 {/* Simulated Flower Elements Inside */}
                 <div className="relative z-10 text-center flex flex-col items-center justify-center gap-2">
-                  <Sparkles className="w-8 h-8 text-[#D4AF37] animate-spin" />
-                  <span className="font-serif-display text-base font-bold text-[#8B5E3C] dark:text-[#E5C158] px-2 text-center">
+                  <Sparkles className="w-8 h-8 text-[#D4A373] animate-spin" />
+                  <span className="font-serif-display text-base font-bold text-[#2D2421] dark:text-[#FAF7F2] px-2 text-center">
                     {selection.engravingText || 'Your Custom Inscription'}
                   </span>
                   <div className="flex flex-wrap gap-1 justify-center max-w-[180px] mt-1">
                     {selection.memoryItems.slice(0, 3).map((item) => (
-                      <span key={item} className="text-[9px] bg-[#D4AF37]/20 text-[#8B5E3C] px-2 py-0.5 rounded-full font-medium">
+                      <span key={item} className="text-[9px] bg-[#D4A373]/20 text-[#2D2421] px-2 py-0.5 rounded-full font-medium">
                         {item.split(' ')[0]}
                       </span>
                     ))}
@@ -208,21 +210,21 @@ Please confirm flower shipping details!`;
               </div>
 
               {/* Wooden Base Preview */}
-              <div className="absolute -bottom-2 w-64 h-5 rounded-lg bg-gradient-to-r from-[#5C3D2E] via-[#8B5E3C] to-[#5C3D2E] shadow-xl border border-[#D4AF37]/40 flex items-center justify-center">
-                <span className="text-[9px] text-[#F5EFE6] font-mono tracking-wider">
+              <div className="absolute -bottom-2 w-64 h-5 rounded-lg bg-gradient-to-r from-[#3A2D28] via-[#2D2421] to-[#3A2D28] shadow-xl border border-[#D4A373]/40 flex items-center justify-center">
+                <span className="text-[9px] text-[#FAF7F2] font-mono tracking-wider">
                   {selection.baseWood}
                 </span>
               </div>
             </div>
 
             {/* Dynamic Price Summary */}
-            <div className="w-full glass-panel p-4 rounded-2xl border border-[#D4AF37]/30 flex items-center justify-between shadow-md">
+            <div className="w-full glass-panel p-4 rounded-2xl border border-[#D4A373]/30 flex items-center justify-between shadow-md">
               <div>
-                <span className="text-[11px] text-[#6B5E55] dark:text-[#C4B8AD] block">
+                <span className="text-[11px] text-[#3A3A3A] dark:text-[#E8D8CD] block">
                   Estimated Turnaround: 10-14 Days
                 </span>
-                <span className="font-serif-display text-2xl font-bold text-[#2A2421] dark:text-[#F5EFE6]">
-                  ${selection.estimatedPrice}
+                <span className="font-serif-display text-2xl font-bold text-[#2D2421] dark:text-[#FAF7F2]">
+                  ₹{selection.estimatedPrice}
                 </span>
               </div>
 
@@ -241,9 +243,9 @@ Please confirm flower shipping details!`;
           {/* Right Column: Customization Wizard Controls */}
           <div className="lg:w-1/2 p-6 sm:p-8 overflow-y-auto flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-6 border-b border-[#D4AF37]/20 pb-4">
-                <Wand2 className="w-5 h-5 text-[#D4AF37]" />
-                <h4 className="font-serif-display text-xl font-bold text-[#2A2421] dark:text-[#F5EFE6]">
+              <div className="flex items-center gap-2 mb-6 border-b border-[#D4A373]/20 pb-4">
+                <Wand2 className="w-5 h-5 text-[#D4A373]" />
+                <h4 className="font-serif-display text-xl font-bold text-[#2D2421] dark:text-[#FAF7F2]">
                   Configure Specifications
                 </h4>
               </div>
@@ -263,8 +265,8 @@ Please confirm flower shipping details!`;
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                       activeTab === tab.id
-                        ? 'bg-[#D4AF37] text-white font-bold shadow-sm'
-                        : 'bg-white/50 dark:bg-[#1C1815] text-[#6B5E55] dark:text-[#C4B8AD]'
+                        ? 'bg-[#D4A373] text-white font-bold shadow-sm'
+                        : 'bg-white/50 dark:bg-[#231C18] text-[#3A3A3A] dark:text-[#E8D8CD]'
                     }`}
                   >
                     {tab.label}
@@ -275,7 +277,7 @@ Please confirm flower shipping details!`;
               {/* Tab Contents */}
               {activeTab === 'shape' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Select Frame Silhouette</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Select Frame Silhouette</h5>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {shapes.map((s) => (
                       <button
@@ -283,12 +285,12 @@ Please confirm flower shipping details!`;
                         onClick={() => handleUpdate('shape', s.name)}
                         className={`p-4 rounded-2xl border text-center font-medium text-xs flex flex-col items-center gap-2 transition-all ${
                           selection.shape === s.name
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#8B5E3C] dark:text-[#E5C158] font-bold shadow-sm'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-[#D4AF37]/50'
+                            ? 'border-[#D4A373] bg-[#D4A373]/10 text-[#2D2421] dark:text-[#D8B4E2] font-bold shadow-sm'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-[#D4A373]/50'
                         }`}
                       >
                         <div
-                          className="w-10 h-10 bg-[#D4AF37]/30 border border-[#D4AF37]"
+                          className="w-10 h-10 bg-[#D4A373]/30 border border-[#D4A373]"
                           style={{ clipPath: s.path }}
                         />
                         <span>{s.name}</span>
@@ -300,7 +302,7 @@ Please confirm flower shipping details!`;
 
               {activeTab === 'size' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Select Dimensions</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Select Dimensions</h5>
                   <div className="grid grid-cols-2 gap-3">
                     {sizes.map((sz) => (
                       <button
@@ -308,12 +310,12 @@ Please confirm flower shipping details!`;
                         onClick={() => handleUpdate('size', sz)}
                         className={`p-4 rounded-2xl border text-left font-medium text-xs transition-all ${
                           selection.size === sz
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#8B5E3C] dark:text-[#E5C158] font-bold shadow-sm'
+                            ? 'border-[#D4A373] bg-[#D4A373]/10 text-[#2D2421] dark:text-[#D8B4E2] font-bold shadow-sm'
                             : 'border-gray-200 dark:border-gray-700'
                         }`}
                       >
                         <span className="block text-sm font-bold">{sz}</span>
-                        <span className="text-[11px] text-[#6B5E55] dark:text-[#C4B8AD]">Ideal for mantlepiece & desks</span>
+                        <span className="text-[11px] text-[#3A3A3A] dark:text-[#E8D8CD]">Ideal for mantlepiece & desks</span>
                       </button>
                     ))}
                   </div>
@@ -322,7 +324,7 @@ Please confirm flower shipping details!`;
 
               {activeTab === 'base' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Select Pedestal Base</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Select Pedestal Base</h5>
                   <div className="grid grid-cols-2 gap-3">
                     {baseWoods.map((b) => (
                       <button
@@ -330,7 +332,7 @@ Please confirm flower shipping details!`;
                         onClick={() => handleUpdate('baseWood', b)}
                         className={`p-3.5 rounded-2xl border text-left font-medium text-xs transition-all ${
                           selection.baseWood === b
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#8B5E3C] dark:text-[#E5C158] font-bold'
+                            ? 'border-[#D4A373] bg-[#D4A373]/10 text-[#2D2421] dark:text-[#D8B4E2] font-bold'
                             : 'border-gray-200 dark:border-gray-700'
                         }`}
                       >
@@ -343,7 +345,7 @@ Please confirm flower shipping details!`;
 
               {activeTab === 'items' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Select Memory Items to Embed</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Select Memory Items to Embed</h5>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {memoryItemOptions.map((item) => {
                       const selected = selection.memoryItems.includes(item);
@@ -353,12 +355,12 @@ Please confirm flower shipping details!`;
                           onClick={() => toggleMemoryItem(item)}
                           className={`p-3 rounded-xl border text-left text-xs flex items-center justify-between transition-all ${
                             selected
-                              ? 'border-[#D4AF37] bg-[#D4AF37]/15 font-bold text-[#8B5E3C] dark:text-[#E5C158]'
+                              ? 'border-[#D4A373] bg-[#D4A373]/15 font-bold text-[#2D2421] dark:text-[#D8B4E2]'
                               : 'border-gray-200 dark:border-gray-700'
                           }`}
                         >
                           <span>{item}</span>
-                          {selected && <Check className="w-4 h-4 text-[#D4AF37]" />}
+                          {selected && <Check className="w-4 h-4 text-[#D4A373]" />}
                         </button>
                       );
                     })}
@@ -368,7 +370,7 @@ Please confirm flower shipping details!`;
 
               {activeTab === 'foil' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Gold Foil Density</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Gold Foil Density</h5>
                   <div className="grid grid-cols-2 gap-3">
                     {goldFoilOptions.map((f) => (
                       <button
@@ -376,7 +378,7 @@ Please confirm flower shipping details!`;
                         onClick={() => handleUpdate('goldFoil', f)}
                         className={`p-3.5 rounded-2xl border text-left font-medium text-xs transition-all ${
                           selection.goldFoil === f
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#8B5E3C] dark:text-[#E5C158] font-bold'
+                            ? 'border-[#D4A373] bg-[#D4A373]/10 text-[#2D2421] dark:text-[#D8B4E2] font-bold'
                             : 'border-gray-200 dark:border-gray-700'
                         }`}
                       >
@@ -389,15 +391,15 @@ Please confirm flower shipping details!`;
 
               {activeTab === 'engraving' && (
                 <div className="space-y-4">
-                  <h5 className="text-sm font-semibold text-[#2A2421] dark:text-[#F5EFE6]">Engraving Text (Names / Wedding Date / Quote)</h5>
+                  <h5 className="text-sm font-semibold text-[#2D2421] dark:text-[#FAF7F2]">Engraving Text (Names / Wedding Date / Quote)</h5>
                   <input
                     type="text"
                     placeholder="e.g., Aarav & Priya • 14.02.2026"
                     value={selection.engravingText}
                     onChange={(e) => handleUpdate('engravingText', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/40 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#231C18] border border-[#D4A373]/40 text-sm text-[#2D2421] dark:text-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#D4A373]"
                   />
-                  <p className="text-xs text-[#6B5E55] dark:text-[#C4B8AD]">
+                  <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD]">
                     Our calligraphers will laser-engrave this inscription on brass plaque or directly on wood base.
                   </p>
                 </div>
@@ -405,7 +407,7 @@ Please confirm flower shipping details!`;
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-6 border-t border-[#D4AF37]/20 flex items-center gap-3">
+            <div className="pt-6 border-t border-[#D4A373]/20 flex items-center gap-3">
               <button
                 onClick={() => {
                   onAddToCartCustom({
@@ -415,7 +417,7 @@ Please confirm flower shipping details!`;
                     price: selection.estimatedPrice,
                     rating: 5,
                     reviewsCount: 1,
-                    image: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?q=80&w=800&auto=format&fit=crop',
+                    image: foreverRoseBookmarkImg,
                     description: `Custom piece with ${selection.baseWood}, ${selection.goldFoil}, and text "${selection.engravingText}"`,
                     features: selection.memoryItems,
                     dimensions: selection.size,
@@ -425,7 +427,7 @@ Please confirm flower shipping details!`;
                   });
                   onClose();
                 }}
-                className="flex-1 py-3.5 rounded-xl bg-[#2A2421] dark:bg-[#F5EFE6] text-white dark:text-[#12100E] font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:bg-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-white transition-all text-center"
+                className="flex-1 py-3.5 rounded-xl bg-[#D4A373] text-white font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:bg-[#2D241E] transition-all text-center"
               >
                 Add Custom Design to Order List
               </button>

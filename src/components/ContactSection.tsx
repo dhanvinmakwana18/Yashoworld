@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { openEmailClient } from '../lib/emailUtils';
 import {
   Sparkles,
   Instagram,
   MessageCircle,
   Mail,
-  MapPin,
   Send,
   Clock,
   CheckCircle2,
@@ -72,7 +72,7 @@ export const ContactSection: React.FC = () => {
 
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/pourfection_by_yashvi?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/50 dark:hover:bg-[#2A2421]/50 transition-colors group"
@@ -85,7 +85,7 @@ export const ContactSection: React.FC = () => {
                     Instagram
                   </h4>
                   <p className="text-xs text-[#8B5E3C] dark:text-[#D4AF37] font-semibold">
-                    @yashoworld_art
+                    @pourfection_by_yashvi
                   </p>
                   <span className="text-[11px] text-[#6B5E55] dark:text-[#C4B8AD]">
                     Daily behind-the-scenes resin casting videos & gallery
@@ -95,7 +95,7 @@ export const ContactSection: React.FC = () => {
 
               {/* WhatsApp */}
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/50 dark:hover:bg-[#2A2421]/50 transition-colors group"
@@ -108,7 +108,7 @@ export const ContactSection: React.FC = () => {
                     WhatsApp Instant Support
                   </h4>
                   <p className="text-xs text-[#8B5E3C] dark:text-[#D4AF37] font-semibold">
-                    +91 98765 43210
+                    Instant Chat Assistance
                   </p>
                   <span className="text-[11px] text-[#6B5E55] dark:text-[#C4B8AD]">
                     Immediate assistance & flower packing guidance
@@ -118,8 +118,14 @@ export const ContactSection: React.FC = () => {
 
               {/* Email */}
               <a
-                href="mailto:hello@yashoworld.com"
-                className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/50 dark:hover:bg-[#2A2421]/50 transition-colors group"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=pourfectionbyyashvi@gmail.com"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openEmailClient('pourfectionbyyashvi@gmail.com', 'Custom Inquiry - YashoWorld Resin Art');
+                }}
+                className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/50 dark:hover:bg-[#2A2421]/50 transition-colors group cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#8B5E3C] text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                   <Mail className="w-6 h-6" />
@@ -129,28 +135,13 @@ export const ContactSection: React.FC = () => {
                     Email Inquiries
                   </h4>
                   <p className="text-xs text-[#8B5E3C] dark:text-[#D4AF37] font-semibold">
-                    hello@yashoworld.com
+                    pourfectionbyyashvi@gmail.com
                   </p>
                   <span className="text-[11px] text-[#6B5E55] dark:text-[#C4B8AD]">
                     Bulk corporate & return favor orders
                   </span>
                 </div>
               </a>
-
-              {/* Studio Location */}
-              <div className="flex items-start gap-4 p-3 rounded-2xl">
-                <div className="w-12 h-12 rounded-xl bg-[#2A2421] text-[#D4AF37] flex items-center justify-center shadow-md">
-                  <MapPin className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-serif-display text-base font-bold text-[#2A2421] dark:text-[#F5EFE6]">
-                    Master Studio Studio
-                  </h4>
-                  <p className="text-xs text-[#6B5E55] dark:text-[#C4B8AD] leading-relaxed">
-                    YashoWorld Handmade Art Studio, Turner Road, Bandra West, Mumbai, MH 400050
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -158,7 +149,7 @@ export const ContactSection: React.FC = () => {
           <div className="lg:col-span-7">
             <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-white/90 dark:border-[#D4AF37]/30 shadow-2xl relative">
               <h3 className="font-serif-display text-2xl font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-2">
-                Send a Custom Inquiry
+                Inquiry
               </h3>
               <p className="text-xs text-[#6B5E55] dark:text-[#C4B8AD] mb-8">
                 Fill out your details below and our design team will reply within 2 hours.
@@ -174,7 +165,7 @@ export const ContactSection: React.FC = () => {
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <h4 className="font-serif-display text-2xl font-bold text-[#2A2421] dark:text-[#F5EFE6]">
-                    Inquiry Received with Love!
+                    Inquiry Received with Love
                   </h4>
                   <p className="text-sm text-[#6B5E55] dark:text-[#C4B8AD] max-w-md mx-auto">
                     Thank you, {formData.name}! Our studio team will review your request and send flower preservation guidelines to {formData.email} shortly.
@@ -200,57 +191,61 @@ export const ContactSection: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                      <label htmlFor="contact-name" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
                         Your Full Name *
                       </label>
                       <input
+                        id="contact-name"
                         type="text"
                         required
-                        placeholder="e.g. Priya Sharma"
+                        placeholder="Enter full name"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                      <label htmlFor="contact-email" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
                         Email Address *
                       </label>
                       <input
+                        id="contact-email"
                         type="email"
                         required
-                        placeholder="priya@example.com"
+                        placeholder="Enter email address"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                      <label htmlFor="contact-phone" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
                         WhatsApp Phone *
                       </label>
                       <input
+                        id="contact-phone"
                         type="tel"
                         required
-                        placeholder="+91 98765 43210"
+                        placeholder="Enter mobile number"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                      <label htmlFor="contact-event-type" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
                         Occasion / Service Type
                       </label>
                       <select
+                        id="contact-event-type"
                         value={formData.eventType}
                         onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       >
                         <option value="Wedding Garland Preservation">Wedding Garland Preservation</option>
                         <option value="Baby Milestone Keepsake">Baby Milestone Keepsake</option>
@@ -262,15 +257,16 @@ export const ContactSection: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                    <label htmlFor="contact-message" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
                       Your Message & Custom Ideas
                     </label>
                     <textarea
+                      id="contact-message"
                       rows={4}
                       placeholder="Share your wedding date, flower colors, or custom text..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                     />
                   </div>
 

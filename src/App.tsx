@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
-import { ThreeBackgroundCanvas } from './components/ThreeBackgroundCanvas';
+import { Helmet } from 'react-helmet-async';
+import { animatePageEntrance } from './utils/gsapAnimations';
+import { LuxuryAmbientBackground } from './components/LuxuryAmbientBackground';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { StoryAbout } from './components/StoryAbout';
@@ -25,6 +27,7 @@ export default function App() {
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const mainRef = useRef<HTMLElement>(null);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
@@ -38,6 +41,13 @@ export default function App() {
 
   // Lenis Smooth Scroll Setup
   useEffect(() => {
+    // Disable smooth scrolling on touch devices (mobile) to prevent native scroll hijack issues on Chrome/Safari
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    
+    if (isTouchDevice) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -121,16 +131,62 @@ export default function App() {
     }
   };
 
+  const seoTitle = quickViewProduct 
+    ? `${quickViewProduct.name} | YashoWorld Luxury Keepsakes` 
+    : 'YashoWorld | Bespoke Handmade Resin Art & Pooja Thalis';
+
+  const seoDescription = quickViewProduct
+    ? `Discover the handcrafted ${quickViewProduct.name} at YashoWorld. ${quickViewProduct.description}. Custom-made with UV-protected optical grade crystal resin.`
+    : 'YashoWorld Studio designs elite handcrafted resin art, divine crimson thalis, customized wedding varmala preservation frames, and botanic bookmarks that keep precious memories alive.';
+
+  const seoImage = quickViewProduct
+    ? `${window.location.origin}${quickViewProduct.image}`
+    : `${window.location.origin}/images/gallery/regenerated_image_1786194115113.png`;
+
   return (
-    <div className="min-h-screen bg-[#F5EFE6] dark:bg-[#12100E] text-[#2D241E] dark:text-[#F5EFE6] transition-colors duration-500 relative">
-      {/* Immersive UI Radial Background Glow Overlay */}
-      <div className="fixed top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0 bg-[radial-gradient(circle_at_70%_30%,#D4AF37_0%,transparent_50%),radial-gradient(circle_at_20%_80%,#8B5E3C_0%,transparent_50%)]" />
+    <div className="min-h-[100dvh] bg-[#FAF7F2] dark:bg-[#231C18] text-[#2D241E] dark:text-[#FAF7F2] transition-colors duration-500 relative">
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
+        <meta property="og:image" content={seoImage} />
+        <meta property="og:url" content={window.location.href} />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={seoTitle} />
+        <meta property="twitter:description" content={seoDescription} />
+        <meta property="twitter:image" content={seoImage} />
+
+        {/* Search Engine and Discoverability */}
+        <meta name="keywords" content="resin art, pooja thali, wedding flower preservation, handmade keepsake, customized gifts, varmala frame" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      {/* Custom Particle & Ring Cursor */}
+      
+
+      {/* Immersive UI Soft Pastel Radial Background Glow Overlay */}
+      <div className="fixed top-0 left-0 w-full h-full opacity-25 pointer-events-none z-0 bg-[radial-gradient(circle_at_70%_30%,#D4A373_0%,transparent_50%),radial-gradient(circle_at_20%_80%,#D8B4E2_0%,transparent_50%)]" />
 
       {/* Loading Animation */}
-      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      {isLoading && (
+        <LoadingScreen
+          onComplete={() => {
+            setIsLoading(false);
+            if (mainRef.current) {
+              animatePageEntrance(mainRef.current);
+            }
+          }}
+        />
+      )}
 
-      {/* Ambient 3D Background Canvas */}
-      <ThreeBackgroundCanvas />
+      {/* Ambient Luxury Background */}
+      <LuxuryAmbientBackground />
 
       {/* Main Header */}
       <Header
@@ -144,7 +200,7 @@ export default function App() {
       />
 
       {/* Main Content Sections */}
-      <main className="relative z-10">
+      <main ref={mainRef} className="relative z-10">
         <Hero
           onOpenCustomizer={() => setIsCustomizerOpen(true)}
           isDarkTheme={isDarkTheme}

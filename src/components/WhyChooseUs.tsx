@@ -1,8 +1,10 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { Sparkles, ShieldCheck, HeartHandshake, PackageCheck, Truck, Palette, Sparkle } from 'lucide-react';
+import { Sparkles, ShieldCheck, HeartHandshake, PackageCheck, Truck, Palette } from 'lucide-react';
+import { useGsapStagger } from '../utils/gsapAnimations';
 
 export const WhyChooseUs: React.FC = () => {
+  const containerRef = useGsapStagger<HTMLDivElement>('.gsap-why-card');
+
   const features = [
     {
       icon: Sparkles,
@@ -20,7 +22,7 @@ export const WhyChooseUs: React.FC = () => {
       icon: Palette,
       title: 'Custom Designs',
       subtitle: 'Bespoke Artistry',
-      description: 'Choose your shapes, floral palettes, brass engravings, and floating 24K gold foil flakes.',
+      description: 'Choose your shapes, floral palettes, brass engravings, and floating gold foil flakes.',
     },
     {
       icon: PackageCheck,
@@ -43,51 +45,47 @@ export const WhyChooseUs: React.FC = () => {
   ];
 
   return (
-    <section id="why-us" className="py-24 relative overflow-hidden bg-[#FFF8F0] dark:bg-[#12100E]">
+    <section id="why-us" aria-label="Why Choose YashoWorld" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#231C18]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-gold border border-[#D4AF37]/30 mb-4 shadow-sm">
-            <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-            <span className="text-xs font-semibold tracking-wide text-[#8B5E3C] dark:text-[#E5C158] uppercase">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-gold border border-[#D4A373]/30 mb-4 shadow-sm">
+            <Sparkles className="w-4 h-4 text-[#8B4513] dark:text-[#F3C06B]" />
+            <span className="text-xs font-semibold tracking-wide text-[#1A1412] dark:text-[#E8D8CD] uppercase">
               The YashoWorld Distinction
             </span>
           </div>
-          <h2 className="font-serif-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#2A2421] dark:text-[#F5EFE6] tracking-tight mb-4">
+          <h2 className="font-serif-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1A1412] dark:text-[#FAF7F2] tracking-tight mb-4">
             Why Discerning Clients <br />
             <span className="italic font-serif-body text-gold-gradient font-normal">Trust YashoWorld</span>
           </h2>
-          <p className="text-base text-[#6B5E55] dark:text-[#C4B8AD] max-w-2xl mx-auto">
+          <p className="text-base text-[#382E2B] dark:text-[#E8D8CD] max-w-2xl mx-auto font-medium">
             Combining heirloom emotional storytelling with uncompromising museum-grade material quality.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, idx) => {
+        <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="glass-panel p-8 rounded-3xl border border-white/80 dark:border-[#D4AF37]/20 hover:-translate-y-2 transition-all duration-300 shadow-xl group flex flex-col justify-between"
+                className="gsap-why-card glass-panel p-8 rounded-3xl border border-white/80 dark:border-[#D4A373]/25 hover:-translate-y-2 transition-all duration-300 shadow-xl group flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#D4AF37] via-[#AA7C11] to-[#8B5E3C] text-white flex items-center justify-center mb-6 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#8B4513] via-[#D8B4E2] to-[#B8860B] text-white flex items-center justify-center mb-6 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                     <Icon className="w-7 h-7" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">
+                  <span className="text-[11px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider block mb-1">
                     {feature.subtitle}
                   </span>
-                  <h3 className="font-serif-display text-xl font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-3">
+                  <h3 className="font-serif-display text-xl font-bold text-[#1A1412] dark:text-[#FAF7F2] mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-[#6B5E55] dark:text-[#C4B8AD] leading-relaxed">
+                  <p className="text-sm text-[#382E2B] dark:text-[#E8D8CD] leading-relaxed font-medium">
                     {feature.description}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
