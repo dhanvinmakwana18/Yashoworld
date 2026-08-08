@@ -96,8 +96,8 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Logo */}
           <a href="#" className="flex items-center group cursor-pointer">
             <SafeImage
-              src="/images/branding/yashoworld_logo.png"
-              fallbackSrc="/images/branding/yashoworld_logo.png"
+              src="/images/branding/regenerated_image_1786195890346.png"
+              fallbackSrc="/images/branding/regenerated_image_1786195890346.png"
               alt="YashoWorld Logo"
               isLogo={true}
               priority={true}
@@ -210,8 +210,8 @@ export const Header: React.FC<HeaderProps> = ({
                   className="flex items-center group"
                 >
                   <SafeImage
-                    src="/images/branding/yashoworld_logo.png"
-                    fallbackSrc="/images/branding/yashoworld_logo.png"
+                    src="/images/branding/regenerated_image_1786195890346.png"
+                    fallbackSrc="/images/branding/regenerated_image_1786195890346.png"
                     alt="YashoWorld Logo"
                     isLogo={true}
                     priority={true}
