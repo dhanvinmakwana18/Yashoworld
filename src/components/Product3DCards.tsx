@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import {
   Sparkles,
   Star,
@@ -184,16 +183,15 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                     <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                   </button>
 
-                  {/* Product Image Container */}
+                  {/* Product Image Container (Replaced with Gradient/Text Block) */}
                   <div
                     onClick={() => onQuickView(product)}
-                    className="relative aspect-[4/3] overflow-hidden bg-[#FAF7F2] dark:bg-[#2B231F]"
+                    className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-4 text-center border-b border-black/5"
                   >
-                    <SafeImage
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
+                    <div className="z-10">
+                       <h3 className="font-serif-display text-lg sm:text-xl font-bold text-[#D4A373] mb-2">{product.name}</h3>
+                       <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] opacity-70 line-clamp-2">{product.description}</p>
+                    </div>
 
                     {/* Glass Reflection Glow Effect */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">

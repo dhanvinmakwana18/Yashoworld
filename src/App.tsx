@@ -29,15 +29,48 @@ export default function App() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const mainRef = useRef<HTMLElement>(null);
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      product: PRODUCTS_DATA[0],
-      quantity: 1,
-      customizationDetails: { names: 'Aarav & Priya', date: '14.02.2026' },
-    },
-  ]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const [wishlistIds, setWishlistIds] = useState<string[]>(['yw-001', 'yw-002']);
+
+  const getSessionId = () => {
+    let sessionId = localStorage.getItem('yasho_session_id');
+    if (!sessionId) {
+      sessionId = 'session_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('yasho_session_id', sessionId);
+    }
+    return sessionId;
+  };
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const sessionId = getSessionId();
+        const response = await fetch(`/api/cart/${sessionId}`);
+        if (response.ok) {
+          const data = await response.json();
+          const formattedItems = data.map((item: any) => {
+            const product = PRODUCTS_DATA.find(p => p.id === item.product_id);
+            if (!product) return null;
+            let parsedCustomizations = item.customizations;
+            if (typeof parsedCustomizations === 'string') {
+              try { parsedCustomizations = JSON.parse(parsedCustomizations); } catch(e) {}
+            }
+            return {
+              dbId: item.id,
+              product: product,
+              quantity: item.quantity,
+              customizationDetails: parsedCustomizations,
+            };
+          }).filter(Boolean);
+          setCartItems(formattedItems);
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error);
+      }
+    };
+    fetchCart();
+  }, []);
 
   // Lenis Smooth Scroll Setup
   useEffect(() => {
@@ -76,44 +109,97 @@ export default function App() {
   }, [isDarkTheme]);
 
   // Cart operations
-  const handleAddToCart = (product: Product, customization?: any) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  const handleAddToCart = async (product: Product, customization?: any) => {
+    try {
+      const sessionId = getSessionId();
+      const existing = cartItems.find((item) => item.product.id === product.id);
+      
+      if (existing && existing.dbId) {
+        // Update existing item
+        const newQty = existing.quantity + 1;
+        const res = await fetch(`/api/cart/${existing.dbId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: newQty, customizations: customization || existing.customizationDetails }),
+        });
+        if (res.ok) {
+          setCartItems((prev) =>
+            prev.map((item) =>
+              item.product.id === product.id
+                ? { ...item, quantity: newQty }
+                : item
+            )
+          );
+        }
+      } else {
+        // Create new item
+        const res = await fetch(`/api/cart/${sessionId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id, quantity: 1, customizations: customization }),
+        });
+        if (res.ok) {
+          const savedItem = await res.json();
+          setCartItems((prev) => [
+            ...prev,
+            { dbId: savedItem.id, product, quantity: 1, customizationDetails: customization },
+          ]);
+        }
       }
-      return [
-        ...prev,
-        {
-          product,
-          quantity: 1,
-          customizationDetails: customization,
-        },
-      ];
-    });
-    setIsCartOpen(true);
+      setIsCartOpen(true);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+    }
   };
 
-  const handleUpdateQuantity = (productId: string, delta: number) => {
-    setCartItems((prev) =>
-      prev
-        .map((item) => {
-          if (item.product.id === productId) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter(Boolean) as CartItem[]
-    );
+  const handleUpdateQuantity = async (productId: string, delta: number) => {
+    const item = cartItems.find(i => i.product.id === productId);
+    if (!item || !item.dbId) return;
+
+    const newQty = item.quantity + delta;
+    if (newQty > 0) {
+      try {
+        const res = await fetch(`/api/cart/${item.dbId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: newQty, customizations: item.customizationDetails }),
+        });
+        if (res.ok) {
+          setCartItems((prev) =>
+            prev.map((i) => i.product.id === productId ? { ...i, quantity: newQty } : i)
+          );
+        }
+      } catch (error) {
+        console.error('Failed to update quantity:', error);
+      }
+    } else {
+      handleRemoveItem(productId);
+    }
   };
 
-  const handleRemoveItem = (productId: string) => {
-    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
+  const handleRemoveItem = async (productId: string) => {
+    const item = cartItems.find(i => i.product.id === productId);
+    if (!item || !item.dbId) return;
+    try {
+      const res = await fetch(`/api/cart/${item.dbId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setCartItems((prev) => prev.filter((i) => i.product.id !== productId));
+      }
+    } catch (error) {
+      console.error('Failed to remove item:', error);
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      const sessionId = getSessionId();
+      const res = await fetch(`/api/cart/session/${sessionId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Failed to clear cart:', error);
+    }
   };
 
   const handleToggleWishlist = (productId: string) => {
@@ -139,9 +225,7 @@ export default function App() {
     ? `Discover the handcrafted ${quickViewProduct.name} at YashoWorld. ${quickViewProduct.description}. Custom-made with UV-protected optical grade crystal resin.`
     : 'YashoWorld Studio designs elite handcrafted resin art, divine crimson thalis, customized wedding varmala preservation frames, and botanic bookmarks that keep precious memories alive.';
 
-  const seoImage = quickViewProduct
-    ? `${window.location.origin}${quickViewProduct.image}`
-    : `${window.location.origin}/images/gallery/regenerated_image_1786194115113.png`;
+  const seoImage = `${window.location.origin}/placeholder.png`;
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF7F2] dark:bg-[#231C18] text-[#2D241E] dark:text-[#FAF7F2] transition-colors duration-500 relative">
@@ -244,7 +328,7 @@ export default function App() {
         cartItems={cartItems}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
-        onClearCart={() => setCartItems([])}
+        onClearCart={handleClearCart}
       />
     </div>
   );

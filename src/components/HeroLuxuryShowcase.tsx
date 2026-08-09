@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Heart, Wand2, ChevronRight, ShieldCheck, Check } from 'lucide-react';
-import { SafeImage } from './SafeImage';
-const foreverRoseBookmarkImg = '/images/gallery/regenerated_image_1786194115113.png';
-const thaliRedLakshmiGaneshImg = '/images/gallery/regenerated_image_1786190493138.jpg';
-const preservedRoseCoasterImg = '/images/gallery/flower_preservation_art.jpg';
+const foreverRoseBookmarkImg = '/images/gallery/forever_rose_bookmark.jpg';
 
 interface HeroLuxuryShowcaseProps {
   onOpenCustomizer: () => void;
@@ -22,14 +19,12 @@ const ARTWORK_PRESETS = [
     title: 'Crimson Lakshmi-Ganesha Divine Pooja Thali',
     subtitle: 'Golden Shubh-Labh • Handcrafted Idols • Vivid Red Swirl',
     tag: 'Divine Collection',
-    image: thaliRedLakshmiGaneshImg,
   },
   {
     id: 'artwork-3',
     title: 'Real Dried Rose & Pearl Resin Coaster',
     subtitle: 'Preserved Red Rose • Pink Bougainvillea • Gold Leaf Flakes',
     tag: 'Signature Artisan',
-    image: preservedRoseCoasterImg,
   },
 ];
 
@@ -59,16 +54,19 @@ export const HeroLuxuryShowcase: React.FC<HeroLuxuryShowcaseProps> = ({ onOpenCu
         </div>
 
         {/* Center High-Definition Resin Artwork Image Frame */}
-        <div className="relative w-full h-[320px] rounded-2xl overflow-hidden border border-white/60 dark:border-[#D4A373]/20 bg-[#FAF7F2] dark:bg-[#231C18] shadow-inner flex items-center justify-center my-2 group/img">
-          <SafeImage
-            src={currentArtwork.image}
-            alt={currentArtwork.title}
-            priority={true}
-            className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700 ease-out"
-          />
+        <div className="relative w-full h-[180px] rounded-2xl overflow-hidden border border-white/60 dark:border-[#D4A373]/20 bg-gradient-to-tr from-[#FAF7F2] to-white dark:from-[#231C18] dark:to-[#181311] shadow-inner flex items-center justify-center my-2 group/img">
+          
+          {(currentArtwork as any).image ? (
+            <img src={(currentArtwork as any).image} alt={currentArtwork.title} className="w-full h-full object-cover scale-100 group-hover/img:scale-110 transition-transform duration-700 ease-in-out" />
+          ) : (
+            <div className="text-center px-4 z-10">
+              <h3 className="text-xl font-serif font-bold text-[#D4A373] mb-1">{currentArtwork.title}</h3>
+              <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD]">{currentArtwork.subtitle}</p>
+            </div>
+          )}
 
           {/* Crystal Resin Gloss Reflection Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-white/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/20 pointer-events-none" />
 
           {/* Quick Customizer Floating Badge */}
           <button
@@ -82,39 +80,25 @@ export const HeroLuxuryShowcase: React.FC<HeroLuxuryShowcaseProps> = ({ onOpenCu
 
         {/* Artwork Description & Preset Switcher Controls */}
         <div className="mt-2 z-10">
-          <div className="mb-4">
-            <h3 className="text-lg font-serif font-bold text-[#2D2421] dark:text-[#FAF7F2] leading-snug">
-              {currentArtwork.title}
-            </h3>
-            <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] font-medium mt-1">
-              {currentArtwork.subtitle}
-            </p>
-          </div>
-
           {/* Preset Selector Thumbnails */}
-          <div className="grid grid-cols-3 gap-3 pt-3 border-t border-[#D4A373]/20">
+          <div className="grid grid-cols-3 gap-3 pt-3 border-[#D4A373]/20">
             {ARTWORK_PRESETS.map((preset, idx) => {
               const isSelected = activeIdx === idx;
               return (
                 <button
                   key={preset.id}
                   onClick={() => setActiveIdx(idx)}
-                  className={`p-1.5 rounded-xl border text-left transition-all flex items-center gap-2 focus:outline-hidden focus:ring-2 focus:ring-[#D4A373] ${
+                  className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1 focus:outline-hidden focus:ring-2 focus:ring-[#D4A373] ${
                     isSelected
                       ? 'bg-white dark:bg-[#231C18] border-[#D4A373] shadow-md scale-102'
                       : 'bg-white/50 dark:bg-[#231C18]/50 border-transparent hover:border-[#D4A373]/50 opacity-80 hover:opacity-100'
                   }`}
                 >
-                  <SafeImage
-                    src={preset.image}
-                    alt={preset.title}
-                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                  />
-                  <div className="hidden sm:block overflow-hidden">
-                    <div className="text-[10px] font-bold text-[#2D2421] dark:text-[#FAF7F2] truncate">
+                  <div className="overflow-hidden w-full">
+                    <div className="text-[11px] font-bold text-[#2D2421] dark:text-[#FAF7F2] truncate">
                       Option 0{idx + 1}
                     </div>
-                    <div className="text-[9px] text-[#D4A373] dark:text-[#D8B4E2] truncate font-medium">
+                    <div className="text-[10px] text-[#D4A373] dark:text-[#D8B4E2] truncate font-medium mt-0.5">
                       {preset.tag}
                     </div>
                   </div>

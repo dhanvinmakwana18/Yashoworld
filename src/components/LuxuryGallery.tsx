@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import { Sparkles, Heart, ZoomIn, X, Calendar, UploadCloud, ArrowRight, Edit, Trash2 } from 'lucide-react';
 import { GalleryItem } from '../types';
 import { useDevMode } from '../hooks/useDevMode';
@@ -38,7 +37,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
           id: item.id,
           title: item.title,
           category: item.category,
-          image: item.imageUrl,
+          image: item.imageData,
           aspectRatio: 'square',
           story: item.story || 'Beautiful memories captured forever.',
           date: item.date || new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
@@ -72,70 +71,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
     }));
   };
 
-  const onDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
 
-  const onDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  // Securely upload files with developer secret token
-  const uploadFiles = useCallback((files: File[]) => {
-    const imageFiles = files.filter((file) => file.type.startsWith('image/'));
-    
-    imageFiles.forEach((file) => {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
-      formData.append('category', selectedTag === 'All' ? 'Preview' : selectedTag);
-      
-      fetch('/api/gallery/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer yashoworld_developer_secret_key_2026'
-        },
-        body: formData,
-      })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Upload failed. Unauthorized or server error.');
-        }
-        return res.json();
-      })
-      .then(data => {
-        const newItem: GalleryItem = {
-          id: data.id,
-          title: data.title,
-          category: data.category,
-          image: data.imageUrl,
-          aspectRatio: 'square',
-          story: data.story || 'Preview image uploaded via Developer Mode.',
-          date: data.date || new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-          likes: data.likes || 0
-        };
-        setLocalGallery(prev => [newItem, ...prev]);
-      })
-      .catch(err => console.error('Upload failed:', err));
-    });
-  }, [selectedTag]);
-
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      uploadFiles(Array.from(e.dataTransfer.files));
-    }
-  }, [uploadFiles]);
-
-  const onFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      uploadFiles(Array.from(e.target.files));
-    }
-  }, [uploadFiles]);
 
   // Edit action triggers
   const handleEditClick = (item: GalleryItem) => {
@@ -238,37 +174,10 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
           ))}
         </div>
 
-        {/* Developer Mode Drop Zone */}
-        {isDevMode && (
-          <div
-            onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
-            onDrop={onDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`mb-8 border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center transition-colors duration-300 ${isDragging ? 'border-green-500 bg-green-500/10' : 'border-[#D4A373]/50 bg-[#D4A373]/5'} cursor-pointer hover:bg-[#D4A373]/10`}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={onFileSelect}
-              accept="image/*"
-              multiple
-              className="hidden"
-            />
-            <UploadCloud className={`w-10 h-10 mb-3 ${isDragging ? 'text-green-500' : 'text-[#D4A373]'}`} />
-            <h3 className="font-serif-display text-lg font-bold text-[#2D2421] dark:text-[#FAF7F2] mb-1">
-              {isDragging ? 'Drop images here' : 'Developer Upload (Click or Drag & Drop)'}
-            </h3>
-            <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] text-center max-w-md">
-              Drag and drop images here or click to select files. They will be compressed to WebP and added dynamically. (Only visible in Dev Mode)
-            </p>
-          </div>
-        )}
-
         {/* Masonry / Grid Container */}
         {filteredGallery.length === 0 ? (
           <div className="text-center py-12 text-[#3A3A3A] dark:text-[#E8D8CD] italic font-serif-body">
-            New gallery images coming soon...
+            New gallery entries coming soon...
           </div>
         ) : (
           <div className="flex flex-col gap-12">
@@ -286,15 +195,14 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                   className="glass-panel p-3 rounded-3xl border border-white/80 dark:border-[#D4A373]/25 overflow-hidden shadow-xl transition-all duration-500 cursor-pointer group relative flex flex-col justify-between"
                 >
                   {/* Floating Glass Frame Wrap */}
-                  <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-[#FAF7F2] dark:bg-[#231C18]">
-                    <SafeImage
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
+                  <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-6 text-center border-b border-black/5">
+
+                    <div className="z-10">
+                       <h3 className="font-serif-display text-2xl font-bold text-[#D4A373] mb-4">{item.title}</h3>
+                    </div>
 
                     {/* Golden Sparkle Overlay on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
                       <div className="flex items-center justify-between">
                         <span className="px-3 py-1 rounded-full glass-gold text-white text-[10px] font-bold uppercase tracking-wider">
                           {item.category}
@@ -519,13 +427,9 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="relative aspect-square md:aspect-auto overflow-hidden bg-black">
-                <SafeImage
-                  src={activeItem.image}
-                  alt={activeItem.title}
-                  priority={true}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative aspect-square md:aspect-auto overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-black/5">
+                 <h3 className="font-serif-display text-3xl font-bold text-[#D4A373] mb-4">{activeItem.title}</h3>
+                 <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD] opacity-90">{activeItem.story}</p>
               </div>
 
               <div className="p-6 sm:p-8 flex flex-col justify-between bg-[#FAF7F2] dark:bg-[#231C18]">

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import { Sparkles, Star, ChevronLeft, ChevronRight, Quote, Heart } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '../data/testimonials';
 

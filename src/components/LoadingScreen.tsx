@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 
 interface LoadingScreenProps {
   onComplete: () => void;

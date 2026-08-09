@@ -21,7 +21,7 @@ export interface Product {
   originalPrice?: number;
   rating: number;
   reviewsCount: number;
-  image: string;
+  image?: string;
   galleryImages?: string[];
   description: string;
   features: string[];
@@ -47,7 +47,7 @@ export interface GalleryItem {
   id: string;
   title: string;
   category: string;
-  image: string;
+  image?: string;
   aspectRatio?: 'square' | 'portrait' | 'landscape';
   story: string;
   date: string;
@@ -62,7 +62,7 @@ export interface Testimonial {
   content: string;
   productOrdered: string;
   rating: number;
-  avatar: string;
+  avatar?: string;
   image?: string;
 }
 
@@ -74,6 +74,7 @@ export interface FAQItem {
 }
 
 export interface CartItem {
+  dbId?: number;
   product: Product;
   quantity: number;
   customizationDetails?: {

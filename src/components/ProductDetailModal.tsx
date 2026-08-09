@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import {
   X,
   Star,
@@ -75,34 +74,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
           {/* Left Column: Image Gallery */}
           <div className="p-6 bg-[#F5EFE6] dark:bg-[#12100E] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20">
-            <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/80 dark:border-[#D4AF37]/30 shadow-lg mb-4">
-              <SafeImage
-                src={images[activeImageIndex]}
-                alt={product.name}
-                priority={true}
-                className="w-full h-full object-cover"
-              />
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/80 dark:border-[#D4AF37]/30 shadow-lg mb-4 bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-6 text-center">
+               <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#D4A373] mb-4">{product.name}</h3>
+               <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD] opacity-90">{product.description}</p>
               <span className="absolute top-3 left-3 px-3 py-1 rounded-full glass-gold text-[#8B5E3C] dark:text-[#E5C158] text-[10px] font-bold uppercase z-10">
                 {product.resinClarity}
               </span>
             </div>
-
-            {/* Thumbnail Selectors */}
-            {images.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                      activeImageIndex === idx ? 'border-[#D4AF37] scale-105 shadow-md' : 'border-transparent opacity-70'
-                    }`}
-                  >
-                    <SafeImage src={img} alt="Thumbnail" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Right Column: Specifications & Customization */}

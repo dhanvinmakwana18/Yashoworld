@@ -10,7 +10,6 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
       'I was so emotional thinking my wedding varmala would wither away in a few days. YashoWorld turned our wedding flowers into a stunning 3D glass-like resin frame that sits proudly in our living room! Every guest asks about it.',
     productOrdered: 'Eternal Bridal Garland Frame',
     rating: 5,
-    avatar: '/images/branding/yashoworld_logo.png',
   },
   {
     id: 'test-2',
@@ -21,7 +20,6 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
       'The clarity of the resin is unmatched—zero air bubbles, perfectly polished edges, and the gold leaf accent catches the sunlight so beautifully. It feels like an artwork from a high-end gallery in Paris.',
     productOrdered: 'Geode Resin Wall Clock',
     rating: 5,
-    avatar: '/images/branding/yashoworld_logo.png',
   },
   {
     id: 'test-3',
@@ -32,7 +30,6 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
       'We got our daughter’s first hospital tags and footprint sealed inside the Arch Resin Memory Block. The team at YashoWorld treated our memories with such love and care. Highly recommended for milestone gifts!',
     productOrdered: 'Baby Memory Keepsake Block',
     rating: 5,
-    avatar: '/images/branding/yashoworld_logo.png',
   },
   {
     id: 'test-4',
@@ -43,7 +40,6 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
       'Our custom name plate arrived in shatterproof wooden packaging. The ocean wave resin design with raised brass letters looks ultra luxury at our villa entrance. Surpassed all expectations!',
     productOrdered: 'Royal Gold & Marble Name Plate',
     rating: 5,
-    avatar: '/images/branding/yashoworld_logo.png',
   },
   {
     id: 'test-5',
@@ -54,6 +50,5 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
       'I ordered 50 custom resin coasters for my sister’s engagement party return favors. The attention to detail and flower placement in each single piece was breathtaking. Everyone was raving!',
     productOrdered: 'Pressed Petal Resin Coaster Set',
     rating: 5,
-    avatar: '/images/branding/yashoworld_logo.png',
   },
 ];

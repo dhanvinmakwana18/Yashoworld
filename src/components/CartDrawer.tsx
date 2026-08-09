@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import {
   X,
   ShoppingBag,
@@ -132,11 +131,6 @@ Please share payment options and flower courier shipping instructions!`;
                     key={item.product.id}
                     className="glass-panel p-3.5 rounded-2xl border border-white/80 dark:border-[#D4AF37]/20 flex gap-3 relative shadow-sm"
                   >
-                    <SafeImage
-                      src={item.product.image}
-                      alt={item.product.name}
-                      className="w-20 h-20 rounded-xl object-cover border border-[#D4AF37]/30"
-                    />
 
                     <div className="flex-1 flex flex-col justify-between">
                       <div>

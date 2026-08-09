@@ -1,88 +1,20 @@
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
+import { db } from './src/db/index';
+import { gallery, products } from './src/db/schema';
+import { desc, eq, asc } from 'drizzle-orm';
 import multer from 'multer';
-import sharp from 'sharp';
+import fs from 'fs';
+import * as dbService from './src/services/dbService';
 
 const app = express();
+
 const PORT = 3000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Ensure directories exist
-const BACKEND_DIR = path.join(process.cwd(), 'backend');
-const DATA_FILE = path.join(BACKEND_DIR, 'gallery.json');
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'images', 'gallery');
-
-if (!fs.existsSync(BACKEND_DIR)) {
-  fs.mkdirSync(BACKEND_DIR, { recursive: true });
-}
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-// Initialize data file with existing gallery data if it doesn't exist
-if (!fs.existsSync(DATA_FILE)) {
-  const initialData = [
-    {
-      id: '1',
-      title: 'Hero Resin Frame',
-      category: 'Resin Art',
-      imageUrl: '/images/gallery/hero_resin_frame.jpg',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '2',
-      title: 'Flower Preservation Art',
-      category: 'Floral Preservation',
-      imageUrl: '/images/gallery/flower_preservation_art.jpg',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '3',
-      title: 'Floral Memory Resin Art',
-      category: 'Floral Preservation',
-      imageUrl: '/images/gallery/floral_memory_resin_art.jpg',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '4',
-      title: 'Pooja Thali Lavender',
-      category: 'Pooja Thali',
-      imageUrl: '/images/gallery/pooja_thali_lavender.jpg',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '5',
-      title: 'Forever Rose Bookmark',
-      category: 'Bookmarks',
-      imageUrl: '/images/gallery/forever_rose_bookmark_real.jpg',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '6',
-      title: 'Thali Peacock Blue',
-      category: 'Pooja Thali',
-      imageUrl: '/images/gallery/thali_peacock_blue.jpg',
-      created_at: new Date().toISOString()
-    }
-  ];
-  fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
-}
-
-// Multer setup
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'upload-' + uniqueSuffix + ext);
-  }
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Security Authentication Middleware
@@ -107,11 +39,36 @@ const checkAuth = (req: express.Request, res: express.Response, next: express.Ne
 };
 
 // API Routes
-app.get('/api/gallery', (req, res) => {
+app.get('/api/products', async (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-    // Sort descending by created_at so newest uploads are always shown first!
-    data.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const data = await db.select().from(products).orderBy(asc(products.id));
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+// Update product image endpoint
+app.post('/api/products/:id/image', checkAuth, upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image provided' });
+    }
+    const base64Image = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype;
+    const imageData = `data:${mimeType};base64,${base64Image}`;
+    
+    await db.update(products).set({ imageData }).where(eq(products.id, id));
+    res.json({ success: true, message: 'Product image updated' });
+  } catch (error) {
+    console.error('Error updating product image:', error);
+    res.status(500).json({ error: 'Failed to update product image' });
+  }
+});
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const data = await db.select().from(gallery).orderBy(desc(gallery.createdAt));
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read data' });
@@ -120,79 +77,32 @@ app.get('/api/gallery', (req, res) => {
 
 app.post('/api/gallery/upload', checkAuth, upload.single('image'), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image provided' });
+    const { title, category, story } = req.body;
+    const formattedTitle = title ? title.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Bespoke Keepsake';
+    let imageData = '';
+    if (req.file) {
+      imageData = 'data:' + req.file.mimetype + ';base64,' + req.file.buffer.toString('base64');
     }
-
-    const { title, category } = req.body;
-    const originalPath = req.file.path;
-    const filenameWithoutExt = path.parse(req.file.filename).name;
-    const webpFilename = `${filenameWithoutExt}.webp`;
-    const webpPath = path.join(UPLOAD_DIR, webpFilename);
-
-    // Compress and convert to webp using sharp
-    await sharp(originalPath)
-      .webp({ quality: 80 })
-      .toFile(webpPath);
-
-    // Clean up original uploaded file
-    try {
-      fs.unlinkSync(originalPath);
-    } catch (err) {
-      console.error('Failed to delete temporary original file:', err);
-    }
-    
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-    
-    const formattedTitle = title ? title.split(/[-_]/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Bespoke Keepsake';
-    
-    const newItem = {
-      id: Date.now().toString(),
+    const result = await db.insert(gallery).values({
       title: formattedTitle,
       category: category || 'Preview',
-      imageUrl: '/images/gallery/' + webpFilename,
-      story: `Bespoke resin art piece, handcrafted with premium high-gloss UV-protected crystal resin.`,
+      imageData: imageData,
+      story: story || 'Bespoke resin art piece, handcrafted with premium high-gloss UV-protected crystal resin.',
       date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
       likes: Math.floor(Math.random() * 80) + 12,
-      created_at: new Date().toISOString()
-    };
-    
-    data.push(newItem);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    
-    res.status(201).json(newItem);
+    }).returning();
+    res.status(201).json(result[0]);
   } catch (error) {
     console.error('Upload processing error:', error);
-    res.status(500).json({ error: 'Failed to compress and upload image' });
+    res.status(500).json({ error: 'Failed to save entry' });
   }
 });
 
 // Delete endpoint
-app.delete('/api/gallery/:id', checkAuth, (req, res) => {
+app.delete('/api/gallery/:id', checkAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-    const index = data.findIndex((item: any) => item.id === id);
-    if (index === -1) {
-      return res.status(404).json({ error: 'Item not found' });
-    }
-    
-    // Attempt to delete image from disk
-    const item = data[index];
-    if (item.imageUrl && item.imageUrl.startsWith('/images/gallery/')) {
-      const filename = path.basename(item.imageUrl);
-      const filePath = path.join(UPLOAD_DIR, filename);
-      if (fs.existsSync(filePath)) {
-        try {
-          fs.unlinkSync(filePath);
-        } catch (err) {
-          console.error('Failed to delete image file from disk:', err);
-        }
-      }
-    }
-    
-    data.splice(index, 1);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    await db.delete(gallery).where(eq(gallery.id, parseInt(id)));
     res.json({ message: 'Item deleted successfully', id });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete item' });
@@ -200,30 +110,94 @@ app.delete('/api/gallery/:id', checkAuth, (req, res) => {
 });
 
 // Patch endpoint
-app.patch('/api/gallery/:id', checkAuth, (req, res) => {
+app.patch('/api/gallery/:id', checkAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, category, story } = req.body;
     
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-    const index = data.findIndex((item: any) => item.id === id);
-    if (index === -1) {
-      return res.status(404).json({ error: 'Item not found' });
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (category !== undefined) updateData.category = category;
+    if (story !== undefined) updateData.story = story;
+    
+    if (Object.keys(updateData).length > 0) {
+      const result = await db.update(gallery)
+        .set(updateData)
+        .where(eq(gallery.id, parseInt(id)))
+        .returning();
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+      res.json(result[0]);
+    } else {
+      res.status(400).json({ error: 'No update data provided' });
     }
-    
-    const item = data[index];
-    if (title !== undefined) item.title = title;
-    if (category !== undefined) item.category = category;
-    if (story !== undefined) item.story = story;
-    
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    res.json(item);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update item' });
   }
 });
 
+// Cart Endpoints
+app.get('/api/cart/:sessionId', async (req, res) => {
+  try {
+    const items = await dbService.getCartItems(req.params.sessionId);
+    res.json(items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to get cart items' });
+  }
+});
+
+app.post('/api/cart/:sessionId', async (req, res) => {
+  try {
+    const { productId, quantity, customizations } = req.body;
+    const item = await dbService.saveCartItem(req.params.sessionId, productId, quantity, customizations);
+    res.status(201).json(item);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to save cart item' });
+  }
+});
+
+app.put('/api/cart/:itemId', async (req, res) => {
+  try {
+    const { quantity, customizations } = req.body;
+    const item = await dbService.updateCartItem(parseInt(req.params.itemId), quantity, customizations);
+    res.json(item);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update cart item' });
+  }
+});
+
+app.delete('/api/cart/:itemId', async (req, res) => {
+  try {
+    await dbService.deleteCartItem(parseInt(req.params.itemId));
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete cart item' });
+  }
+});
+
+app.delete('/api/cart/session/:sessionId', async (req, res) => {
+  try {
+    await dbService.clearCart(req.params.sessionId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to clear cart' });
+  }
+});
+
 async function startServer() {
+  try {
+    await dbService.initDb();
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+  }
+
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({

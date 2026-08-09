@@ -14,7 +14,6 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { CustomizerSelection } from '../types';
-const foreverRoseBookmarkImg = '/images/gallery/forever_rose_bookmark_real.jpg';
 
 interface CustomizerModalProps {
   isOpen: boolean;
@@ -417,7 +416,6 @@ Please confirm flower shipping details!`;
                     price: selection.estimatedPrice,
                     rating: 5,
                     reviewsCount: 1,
-                    image: foreverRoseBookmarkImg,
                     description: `Custom piece with ${selection.baseWood}, ${selection.goldFoil}, and text "${selection.engravingText}"`,
                     features: selection.memoryItems,
                     dimensions: selection.size,

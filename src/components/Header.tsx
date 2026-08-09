@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SafeImage } from './SafeImage';
 import {
   ShoppingBag,
   Sparkles,
@@ -95,14 +94,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
           <a href="#" className="flex items-center group cursor-pointer">
-            <SafeImage
-              src="/images/branding/regenerated_image_1786195890346.png"
-              fallbackSrc="/images/branding/regenerated_image_1786195890346.png"
-              alt="YashoWorld Logo"
-              isLogo={true}
-              priority={true}
-              className="h-12 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
-            />
+            <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#2A2421] dark:text-[#FAF7F2]">
+              YASHO<span className="text-[#D4AF37]">WORLD</span>
+            </h1>
           </a>
 
           {/* Desktop Navigation Links */}
@@ -209,14 +203,9 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center group"
                 >
-                  <SafeImage
-                    src="/images/branding/regenerated_image_1786195890346.png"
-                    fallbackSrc="/images/branding/regenerated_image_1786195890346.png"
-                    alt="YashoWorld Logo"
-                    isLogo={true}
-                    priority={true}
-                    className="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#2A2421] dark:text-[#FAF7F2]">
+                    YASHO<span className="text-[#D4AF37]">WORLD</span>
+                  </h1>
                 </a>
 
                 <button
