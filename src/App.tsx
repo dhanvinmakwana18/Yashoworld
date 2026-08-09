@@ -30,8 +30,8 @@ export default function App() {
   const mainRef = useRef<HTMLElement>(null);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
   const [wishlistIds, setWishlistIds] = useState<string[]>(['yw-001', 'yw-002']);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem('yasho_session_id');
@@ -281,6 +281,10 @@ export default function App() {
         isDarkTheme={isDarkTheme}
         onToggleTheme={() => setIsDarkTheme(!isDarkTheme)}
         onSearchClick={handleSearchClick}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onQuickView={(product) => setQuickViewProduct(product)}
+        onAddToCart={handleAddToCart}
       />
 
       {/* Main Content Sections */}
@@ -296,6 +300,8 @@ export default function App() {
           onOpenCustomizer={() => setIsCustomizerOpen(true)}
           wishlistIds={wishlistIds}
           onToggleWishlist={handleToggleWishlist}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
         <WhyChooseUs />
         <LuxuryGallery onOpenCustomizer={() => setIsCustomizerOpen(true)} />

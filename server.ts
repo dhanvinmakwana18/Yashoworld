@@ -190,6 +190,77 @@ app.delete('/api/cart/session/:sessionId', async (req, res) => {
   }
 });
 
+// Python Language Backend Feature Endpoints
+import { spawn } from 'child_process';
+
+app.post('/api/python/search', (req, res) => {
+  try {
+    const pythonProcess = spawn('python3', [path.join(process.cwd(), 'backend/python_features/search_engine.py')]);
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdin.write(JSON.stringify(req.body));
+    pythonProcess.stdin.end();
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code === 0 && output) {
+        try {
+          res.json(JSON.parse(output));
+        } catch (e) {
+          res.status(500).json({ error: 'Invalid JSON response from Python engine' });
+        }
+      } else {
+        console.error('Python search error:', errorOutput);
+        res.status(500).json({ error: 'Python search engine execution failed' });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error running Python feature' });
+  }
+});
+
+app.post('/api/python/resin-calculator', (req, res) => {
+  try {
+    const pythonProcess = spawn('python3', [path.join(process.cwd(), 'backend/python_features/resin_calculator.py')]);
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdin.write(JSON.stringify(req.body));
+    pythonProcess.stdin.end();
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code === 0 && output) {
+        try {
+          res.json(JSON.parse(output));
+        } catch (e) {
+          res.status(500).json({ error: 'Invalid JSON from Python calculator' });
+        }
+      } else {
+        console.error('Python calculator error:', errorOutput);
+        res.status(500).json({ error: 'Python resin calculator execution failed' });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error running Python feature' });
+  }
+});
+
 async function startServer() {
   try {
     await dbService.initDb();

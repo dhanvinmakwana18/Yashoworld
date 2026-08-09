@@ -21,6 +21,8 @@ interface Product3DCardsProps {
   onOpenCustomizer: () => void;
   wishlistIds: string[];
   onToggleWishlist: (productId: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 export const Product3DCards: React.FC<Product3DCardsProps> = ({
@@ -29,10 +31,20 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
   onOpenCustomizer,
   wishlistIds,
   onToggleWishlist,
+  searchQuery,
+  onSearchChange,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-low' | 'price-high' | 'rating'>('featured');
+
+  const activeSearchQuery = searchQuery !== undefined ? searchQuery : localSearchQuery;
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalSearchQuery(val);
+    if (onSearchChange) onSearchChange(val);
+  };
 
   const categories: ProductCategory[] = [
     'All',
@@ -56,9 +68,9 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
       const matchesCategory =
         selectedCategory === 'All' || product.category === selectedCategory;
       const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase());
+        product.name.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(activeSearchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     }).sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
@@ -66,7 +78,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
       if (sortBy === 'rating') return b.rating - a.rating;
       return 0; // default order
     });
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, activeSearchQuery, sortBy]);
 
   return (
     <section id="products" aria-label="Curated Resin Art Collection" className="py-24 relative overflow-hidden">
@@ -99,8 +111,8 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
               <input
                 type="text"
                 placeholder="Search memory frames, clocks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={activeSearchQuery}
+                onChange={handleSearchInputChange}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-[#231C18] border border-[#8B4513]/30 dark:border-[#D4A373]/30 text-xs sm:text-sm text-[#1A1412] dark:text-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
               />
             </div>

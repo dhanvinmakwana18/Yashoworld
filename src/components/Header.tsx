@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ShoppingBag,
@@ -11,7 +11,13 @@ import {
   Heart,
   Wand2,
   Phone,
+  Eye,
+  Tag,
+  ArrowRight,
+  SlidersHorizontal,
 } from 'lucide-react';
+import { PRODUCTS_DATA } from '../data/products';
+import { Product } from '../types';
 
 interface HeaderProps {
   cartCount: number;
@@ -21,6 +27,10 @@ interface HeaderProps {
   isDarkTheme: boolean;
   onToggleTheme: () => void;
   onSearchClick: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  onQuickView?: (product: Product) => void;
+  onAddToCart?: (product: Product) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -31,9 +41,21 @@ export const Header: React.FC<HeaderProps> = ({
   isDarkTheme,
   onToggleTheme,
   onSearchClick,
+  searchQuery = '',
+  onSearchChange,
+  onQuickView,
+  onAddToCart,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +63,17 @@ export const Header: React.FC<HeaderProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Lock body scroll when mobile menu is open
@@ -54,6 +87,39 @@ export const Header: React.FC<HeaderProps> = ({
       document.body.style.overflow = 'unset';
     };
   }, [mobileMenuOpen]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalQuery(value);
+    if (onSearchChange) {
+      onSearchChange(value);
+    }
+  };
+
+  const handleTagClick = (tag: string) => {
+    setLocalQuery(tag);
+    if (onSearchChange) {
+      onSearchChange(tag);
+    }
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Real-time filter PRODUCTS_DATA
+  const filteredProducts = PRODUCTS_DATA.filter((p) => {
+    if (!localQuery.trim()) return true;
+    const q = localQuery.toLowerCase();
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.features.some((f) => f.toLowerCase().includes(q))
+    );
+  }).slice(0, 6);
+
+  const quickSearchTags = ['Rose Bookmark', 'Pooja Thali', 'Wedding Keepsake', 'Resin Clock', 'Ganesha'];
 
   const navLinks = [
     { name: 'Story', href: '#story' },
@@ -126,14 +192,166 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Action Controls */}
           <div className="flex items-center gap-2.5 sm:gap-3.5">
-            {/* Search Trigger */}
-            <button
-              onClick={onSearchClick}
-              aria-label="Search Collection"
-              className="p-2 sm:p-2.5 rounded-full hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421] text-[#2D241E] dark:text-[#F5EFE6] transition-colors"
-            >
-              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#5D4E42] dark:text-[#C4B8AD]" />
-            </button>
+            {/* Real-time Interactive Search Component */}
+            <div ref={searchContainerRef} className="relative">
+              <div
+                className={`flex items-center transition-all duration-300 rounded-full border ${
+                  isSearchOpen || localQuery
+                    ? 'w-48 sm:w-64 bg-white/90 dark:bg-[#2A2421]/90 border-[#D4A373] shadow-md px-3 py-1.5'
+                    : 'w-10 h-10 hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421] border-transparent justify-center cursor-pointer'
+                }`}
+                onClick={() => {
+                  if (!isSearchOpen) {
+                    setIsSearchOpen(true);
+                    setTimeout(() => searchInputRef.current?.focus(), 50);
+                  }
+                }}
+              >
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B4513] dark:text-[#F3C06B] shrink-0" />
+                {(isSearchOpen || localQuery) && (
+                  <>
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={localQuery}
+                      onChange={handleInputChange}
+                      onFocus={() => setIsSearchOpen(true)}
+                      placeholder="Search resin art, thalis..."
+                      className="w-full bg-transparent border-none text-xs text-[#2D241E] dark:text-[#F5EFE6] focus:outline-none focus:ring-0 ml-2"
+                    />
+                    {localQuery && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLocalQuery('');
+                          if (onSearchChange) onSearchChange('');
+                        }}
+                        className="p-1 text-[#8B4513] dark:text-[#F3C06B] hover:opacity-80"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Real-time Search Popover Results Dropdown */}
+              <AnimatePresence>
+                {isSearchOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-full mt-3 w-80 sm:w-96 glass-panel rounded-2xl border border-white/80 dark:border-[#D4A373]/30 shadow-2xl overflow-hidden z-50 p-4"
+                  >
+                    {/* Header tags */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider mb-2">
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" /> Popular Keepsakes
+                        </span>
+                        <span>{filteredProducts.length} items</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {quickSearchTags.map((tag) => (
+                          <button
+                            key={tag}
+                            onClick={() => handleTagClick(tag)}
+                            className="text-[10px] px-2.5 py-1 rounded-full bg-[#FAF7F2] dark:bg-[#1A1412] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#12100E] text-[#5D4E42] dark:text-[#E8D8CD] transition-colors border border-[#D4A373]/20 flex items-center gap-1 font-medium"
+                          >
+                            <Tag className="w-2.5 h-2.5" />
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Filtered Products List */}
+                    <div className="max-h-72 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                      {filteredProducts.length > 0 ? (
+                        filteredProducts.map((product) => (
+                          <div
+                            key={product.id}
+                            className="flex items-center justify-between p-2 rounded-xl bg-white/60 dark:bg-[#1E1815]/60 hover:bg-[#F5EFE6] dark:hover:bg-[#2A2421] border border-transparent hover:border-[#D4A373]/30 transition-all group"
+                          >
+                            <div className="flex items-center gap-3">
+                              {product.image && (
+                                <img
+                                  src={product.image}
+                                  alt={product.name}
+                                  className="w-11 h-11 rounded-lg object-cover border border-white/80 dark:border-[#D4A373]/20 shadow-sm"
+                                />
+                              )}
+                              <div>
+                                <h4 className="text-xs font-bold text-[#2A2421] dark:text-[#FAF7F2] line-clamp-1 group-hover:text-[#8B4513] dark:group-hover:text-[#F3C06B] transition-colors">
+                                  {product.name}
+                                </h4>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="text-[10px] font-semibold text-[#8B5E3C] dark:text-[#D4AF37]">
+                                    ₹{product.price.toLocaleString('en-IN')}
+                                  </span>
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#E8D8C4]/50 dark:bg-[#2D241E] text-[#5D4E42] dark:text-[#C4B8AD]">
+                                    {product.category}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5">
+                              {onQuickView && (
+                                <button
+                                  onClick={() => {
+                                    setIsSearchOpen(false);
+                                    onQuickView(product);
+                                  }}
+                                  title="Quick View"
+                                  className="p-1.5 rounded-lg bg-white/80 dark:bg-[#2D241E] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] text-[#2D241E] dark:text-[#FAF7F2] transition-colors"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                              {onAddToCart && (
+                                <button
+                                  onClick={() => {
+                                    onAddToCart(product);
+                                  }}
+                                  title="Add to Cart"
+                                  className="p-1.5 rounded-lg bg-[#8B5E3C] text-white hover:bg-[#4A3728] dark:bg-[#D4AF37] dark:text-[#12100E] transition-colors shadow-xs"
+                                >
+                                  <ShoppingBag className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="py-6 text-center text-xs text-[#8B5E3C] dark:text-[#D4AF37]">
+                          No resin keepsakes found matching "{localQuery}"
+                        </div>
+                      )}
+                    </div>
+
+                    {/* View All Collection CTA */}
+                    <div className="pt-2 mt-2 border-t border-[#D4AF37]/20 flex justify-between items-center text-[10px]">
+                      <span className="text-[#5D4E42] dark:text-[#C4B8AD]">Real-time Python Engine Active</span>
+                      <button
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          const productsSection = document.getElementById('products');
+                          if (productsSection) {
+                            productsSection.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
+                        className="font-bold text-[#8B4513] dark:text-[#F3C06B] flex items-center gap-1 hover:underline"
+                      >
+                        View Collection <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Theme Switcher */}
             <button
