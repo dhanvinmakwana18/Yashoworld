@@ -17,37 +17,39 @@ export function useGsapStagger<T extends HTMLElement>(
     const items = el.querySelectorAll(staggerSelector);
     if (!items.length) return;
 
-    // Use IntersectionObserver for 60 FPS performance instead of heavy scroll listeners
+    // Use IntersectionObserver for 60 FPS performance both on scroll down and scroll up
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            gsap.to(items, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              filter: 'blur(0px)',
+              duration: 0.8,
+              stagger: 0.08,
+              ease: 'power3.out',
+              clearProps: 'filter',
+            });
+          } else {
+            // Determine direction to set starting position for smooth re-entry
+            const scrollY = window.scrollY || window.pageYOffset;
+            const rect = entry.boundingClientRect;
+            const isAbove = rect.top < 0;
 
-            tl.fromTo(
-              items,
-              {
-                opacity: 0,
-                y: 40,
-                scale: 0.96,
-                filter: 'blur(4px)',
-              },
-              {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                filter: 'blur(0px)',
-                duration: 0.85,
-                stagger: 0.08,
-                clearProps: 'transform,filter',
-              }
-            );
-
-            observer.unobserve(entry.target);
+            gsap.to(items, {
+              opacity: 0,
+              y: isAbove ? -30 : 40,
+              scale: 0.96,
+              filter: 'blur(4px)',
+              duration: 0.5,
+              ease: 'power2.in',
+            });
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
     );
 
     observer.observe(el);

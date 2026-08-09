@@ -103,7 +103,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.7, ease: 'easeInOut' }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#12100E] text-[#F5EFE6] overflow-hidden"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#660033] text-[#F5EFE6] overflow-hidden"
         >
           {/* Particle Canvas background forming logo */}
           <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
@@ -130,7 +130,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
           </div>
 
           {/* Progress Shimmer Bar */}
-          <div className="w-48 sm:w-64 h-1 bg-[#2A2421] rounded-full overflow-hidden mt-10 z-10 relative">
+          <div className="w-48 sm:w-64 h-1 bg-[#4D0026] rounded-full overflow-hidden mt-10 z-10 relative">
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: '0%' }}

@@ -8,29 +8,62 @@
     --bg-surface: #F4EFEA;
     --bg-card: rgba(255, 255, 255, 0.95);
     --border-color: rgba(139, 94, 60, 0.25);
-    --text-primary: #1A1412;
-    --text-secondary: #382E2B;
+    --text-primary: #660033;
+    --text-secondary: #4D0026;
     --accent-rosegold: #8B4513;
     --accent-blush: #F8E8EE;
     --accent-lilac: #9C4153;
   }
 
   .dark {
-    --bg-canvas: #161210;
-    --bg-surface: #221B18;
-    --bg-card: rgba(34, 27, 24, 0.95);
+    --bg-canvas: #660033;
+    --bg-surface: #4D0026;
+    --bg-card: rgba(102, 0, 51, 0.95);
     --border-color: rgba(212, 163, 115, 0.35);
     --text-primary: #FAF7F2;
     --text-secondary: #E8D8CD;
     --accent-rosegold: #F3C06B;
-    --accent-blush: #2B231F;
+    --accent-blush: #4D0026;
     --accent-lilac: #D8B4E2;
   }
 
-  body {
+  /* Low Latency & Touch Responsiveness Optimizations for Mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
     background-color: var(--bg-canvas);
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+    text-rendering: optimizeSpeed;
+  }
+
+  button, a, input, select, textarea, [role="button"] {
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+}
+
+/* Fast GPU Compositing for Smooth Mobile Motion & Lower Input Lag */
+.transform-gpu,
+.glass-panel,
+.glass-gold,
+button,
+.interactive-card {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Offscreen Section Rendering Deferred to Free Up Thread for Mobile Touch Events */
+@media (max-width: 768px) {
+  section:not(#hero) {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
   }
 }
 
@@ -56,11 +89,11 @@
 }
 
 .dark .glass-panel {
-  background: linear-gradient(135deg, rgba(34, 27, 24, 0.97) 0%, rgba(22, 18, 16, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(102, 0, 51, 0.97) 0%, rgba(77, 0, 38, 0.95) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(212, 163, 115, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.40);
+  box-shadow: 0 10px 30px rgba(102, 0, 51, 0.40);
 }
 
 .glass-gold {
@@ -71,15 +104,15 @@
 }
 
 .dark .glass-gold {
-  background: linear-gradient(135deg, rgba(43, 35, 31, 0.97) 0%, rgba(28, 22, 19, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(102, 0, 51, 0.97) 0%, rgba(77, 0, 38, 0.95) 100%);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(212, 163, 115, 0.40);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 10px 30px rgba(102, 0, 51, 0.45);
 }
 
 /* High-Contrast Gradient Text */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #8B4513 0%, #B8860B 50%, #9C4153 100%);
+  background: linear-gradient(135deg, #8B4513 0%, #B8860B 50%, #660033 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -90,32 +123,30 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom scrollbar */
+/* Smooth scrolling and complete scrollbar concealment for clean, high-end luxury aesthetics */
+html {
+  scroll-behavior: smooth !important;
+  scroll-padding-top: 85px;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #FAF7F2;
+html, body, div, section, main, article, aside, nav, form, ul, li {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: #231C18;
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #D4A373;
-  border-radius: 9999px;
-  border: 2px solid #FAF7F2;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #D4A373;
-  border: 2px solid #231C18;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #D8B4E2;
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 /* 3D tilt perspective container */

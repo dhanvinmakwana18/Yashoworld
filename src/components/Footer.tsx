@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="relative bg-[#161210] text-[#F5EFE6] pt-20 pb-12 overflow-hidden"
+        className="relative bg-[#660033] text-[#F5EFE6] pt-20 pb-12 overflow-hidden"
       >
         {/* Golden Ambient Ambient Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-[#D4AF37]/15 via-[#8B5E3C]/10 to-transparent rounded-full blur-3xl pointer-events-none" />

@@ -7,12 +7,14 @@ import {
   Plus,
   Minus,
   MessageCircle,
+  Mail,
   Sparkles,
   ShieldCheck,
   CheckCircle2,
   Tag,
 } from 'lucide-react';
 import { CartItem } from '../types';
+import { sendCartOrderEmail } from '../lib/emailUtils';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -71,6 +73,23 @@ Total Estimated Amount: ₹${totalPrice}
 Please share payment options and flower courier shipping instructions!`;
 
     return `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+  };
+
+  const handleEmailOrder = () => {
+    const items = cartItems.map((i) => ({
+      name: i.product.name,
+      quantity: i.quantity,
+      price: i.product.price,
+      category: i.product.category,
+      customNote: i.customizationDetails?.names || '',
+    }));
+
+    sendCartOrderEmail({
+      items,
+      subtotal,
+      discountAmount,
+      totalPrice,
+    });
   };
 
   if (!isOpen) return null;
@@ -228,15 +247,25 @@ Please share payment options and flower courier shipping instructions!`;
                 </div>
 
                 {/* Instant Order Buttons */}
-                <a
-                  href={generateWhatsAppOrderText()}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 transition-all"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  <span>Order Directly via WhatsApp</span>
-                </a>
+                <div className="space-y-2 pt-1">
+                  <button
+                    onClick={handleEmailOrder}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B4513] to-[#660033] hover:from-[#660033] hover:to-[#8B4513] text-white font-bold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Mail className="w-5 h-5 text-[#F3C06B]" />
+                    <span>Order Directly via Email</span>
+                  </button>
+
+                  <a
+                    href={generateWhatsAppOrderText()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-wide shadow-md flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Or Order via WhatsApp</span>
+                  </a>
+                </div>
               </div>
             )}
           </motion.div>

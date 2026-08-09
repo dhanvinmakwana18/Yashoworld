@@ -12,8 +12,10 @@ import {
   Ruler,
   Maximize2,
   MessageCircle,
+  Mail,
 } from 'lucide-react';
 import { CustomizerSelection } from '../types';
+import { sendCustomOrderEmail } from '../lib/emailUtils';
 
 interface CustomizerModalProps {
   isOpen: boolean;
@@ -133,6 +135,18 @@ Please confirm flower shipping details!`;
     return `https://wa.me/919876543210?text=${encodeURIComponent(text)}`;
   };
 
+  const handleEmailOrder = () => {
+    sendCustomOrderEmail({
+      shape: selection.shape,
+      size: selection.size,
+      baseWood: selection.baseWood,
+      memoryItems: selection.memoryItems,
+      goldFoil: selection.goldFoil,
+      engravingText: selection.engravingText,
+      estimatedPrice: selection.estimatedPrice,
+    });
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -144,7 +158,7 @@ Please confirm flower shipping details!`;
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-black/60 backdrop-blur-md"
+          className="fixed inset-0 bg-[#660033]/60 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -157,13 +171,13 @@ Please confirm flower shipping details!`;
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-30 p-2 rounded-full glass-panel hover:bg-white dark:hover:bg-[#2B231F] text-[#2D2421] dark:text-[#FAF7F2] shadow-md"
+            className="absolute top-4 right-4 z-30 p-2 rounded-full glass-panel hover:bg-white dark:hover:bg-[#4D0026] text-[#660033] dark:text-[#FAF7F2] shadow-md"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Left Column: Live 3D Preview Stage */}
-          <div className="lg:w-1/2 p-6 sm:p-8 bg-gradient-to-br from-[#FAF7F2] to-[#F8E8EE]/50 dark:from-[#231C18] dark:to-[#2B231F] flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-[#D4A373]/20 relative overflow-hidden">
+          <div className="lg:w-1/2 p-6 sm:p-8 bg-gradient-to-br from-[#FAF7F2] to-[#F8E8EE]/50 dark:from-[#660033] dark:to-[#4D0026] flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-[#D4A373]/20 relative overflow-hidden">
             <div className="w-full text-center lg:text-left mb-4">
               <span className="text-[11px] font-bold text-[#D4A373] dark:text-[#D8B4E2] uppercase tracking-widest">
                 Interactive 3D Preview
@@ -227,15 +241,25 @@ Please confirm flower shipping details!`;
                 </span>
               </div>
 
-              <a
-                href={generateWhatsAppLink()}
-                target="_blank"
-                rel="noreferrer"
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md transition-colors"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Order via WhatsApp</span>
-              </a>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleEmailOrder}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8B4513] to-[#660033] hover:from-[#660033] hover:to-[#8B4513] text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+                >
+                  <Mail className="w-4 h-4 text-[#F3C06B]" />
+                  <span>Order via Email</span>
+                </button>
+
+                <a
+                  href={generateWhatsAppLink()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import {
   ShoppingBag,
   Sparkles,
@@ -47,11 +47,20 @@ export const Header: React.FC<HeaderProps> = ({
   onAddToCart,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 180,
+    damping: 25,
+    restDelta: 0.001,
+  });
 
   useEffect(() => {
     setLocalQuery(searchQuery);
@@ -59,9 +68,19 @@ export const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 20);
+
+      if (Math.abs(currentScrollY - lastScrollY.current) > 6) {
+        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+          setScrollDirection('down');
+        } else if (currentScrollY < lastScrollY.current) {
+          setScrollDirection('up');
+        }
+        lastScrollY.current = currentScrollY;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -143,24 +162,32 @@ export const Header: React.FC<HeaderProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
+            className="fixed inset-0 bg-[#660033]/60 backdrop-blur-xs z-40 lg:hidden"
           />
         )}
       </AnimatePresence>
 
+      {/* Top Scroll Progress Indicator Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#D4AF37] via-[#F3C06B] to-[#8B4513] origin-left z-50 shadow-[0_0_12px_#D4AF37]"
+        style={{ scaleX }}
+      />
+
       <header
         className={`fixed top-0 left-0 right-0 transition-all duration-300 ${
           mobileMenuOpen
-            ? 'z-50 bg-[#F5EFE6] dark:bg-[#161210] py-4 shadow-2xl border-b border-[#D4AF37]/30'
+            ? 'z-50 bg-[#F5EFE6] dark:bg-[#660033] py-4 shadow-2xl border-b border-[#D4AF37]/30'
             : isScrolled
-            ? 'z-40 py-3 glass-panel shadow-lg border-b border-[#D4AF37]/20'
+            ? scrollDirection === 'down'
+              ? 'z-40 py-2.5 glass-panel shadow-md border-b border-[#D4AF37]/20 -translate-y-1 backdrop-blur-md'
+              : 'z-40 py-3.5 glass-panel shadow-xl border-b border-[#D4AF37]/30 translate-y-0 backdrop-blur-lg'
             : 'z-40 py-5 bg-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
           <a href="#" className="flex items-center group cursor-pointer">
-            <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#2A2421] dark:text-[#FAF7F2]">
+            <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2]">
               YASHO<span className="text-[#D4AF37]">WORLD</span>
             </h1>
           </a>
@@ -180,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`transition-colors relative group py-1 ${
                   link.isSpecial
                     ? 'text-[#8B4513] dark:text-[#F3C06B] font-bold flex items-center gap-1.5'
-                    : 'text-[#1A1412] dark:text-[#E8D8CD] hover:text-[#8B4513] dark:hover:text-white font-semibold'
+                    : 'text-[#660033] dark:text-[#E8D8CD] hover:text-[#8B4513] dark:hover:text-white font-semibold'
                 }`}
               >
                 {link.isSpecial && <Wand2 className="w-3.5 h-3.5 text-[#8B4513] dark:text-[#F3C06B] animate-pulse" />}
@@ -397,7 +424,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Mobile Menu"
-              className="lg:hidden p-2 rounded-lg text-[#2A2421] dark:text-[#F5EFE6]"
+              className="lg:hidden p-2 rounded-lg text-[#660033] dark:text-[#F5EFE6]"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -412,7 +439,7 @@ export const Header: React.FC<HeaderProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-50 bg-[#F5EFE6] dark:bg-[#14100E] flex flex-col justify-between p-6 overflow-y-auto lg:hidden"
+              className="fixed inset-0 z-50 bg-[#F5EFE6] dark:bg-[#660033] flex flex-col justify-between p-6 overflow-y-auto lg:hidden"
             >
               {/* Mobile Drawer Top Bar */}
               <div className="flex items-center justify-between pb-6 border-b border-[#D4AF37]/20">
@@ -421,7 +448,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center group"
                 >
-                  <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#2A2421] dark:text-[#FAF7F2]">
+                  <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2]">
                     YASHO<span className="text-[#D4AF37]">WORLD</span>
                   </h1>
                 </a>
@@ -429,7 +456,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close Menu"
-                  className="p-2.5 rounded-full bg-[#E8D8C4]/60 dark:bg-[#2A2421] text-[#2A2421] dark:text-[#F5EFE6]"
+                  className="p-2.5 rounded-full bg-[#E8D8C4]/60 dark:bg-[#4D0026] text-[#660033] dark:text-[#F5EFE6]"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -450,13 +477,13 @@ export const Header: React.FC<HeaderProps> = ({
                     }}
                     className={`text-lg font-serif-display font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between ${
                       link.isSpecial
-                        ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#12100E] font-bold shadow-md'
-                        : 'text-[#2A2421] dark:text-[#F5EFE6] hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421]'
+                        ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#660033] font-bold shadow-md'
+                        : 'text-[#660033] dark:text-[#F5EFE6] hover:bg-[#E8D8C4]/40 dark:hover:bg-[#4D0026]'
                     }`}
                   >
                     <span>{link.name}</span>
                     {link.isSpecial ? (
-                      <Wand2 className="w-5 h-5 text-amber-200 dark:text-[#12100E]" />
+                      <Wand2 className="w-5 h-5 text-amber-200 dark:text-[#660033]" />
                     ) : (
                       <span className="text-xs text-[#D4AF37] font-sans font-bold">→</span>
                     )}
@@ -471,7 +498,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setMobileMenuOpen(false);
                     onOpenCustomizer();
                   }}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#8B5E3C] to-[#4A3728] dark:from-[#D4AF37] dark:to-[#AA7C11] text-white dark:text-[#12100E] font-bold text-xs uppercase tracking-widest text-center flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#8B5E3C] to-[#660033] dark:from-[#D4AF37] dark:to-[#AA7C11] text-white dark:text-[#660033] font-bold text-xs uppercase tracking-widest text-center flex items-center justify-center gap-2 shadow-lg"
                 >
                   <Wand2 className="w-4 h-4" />
                   <span>3D Custom Order Builder</span>

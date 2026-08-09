@@ -139,7 +139,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
   };
 
   return (
-    <section id="gallery" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#231C18]">
+    <section id="gallery" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#660033]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -166,7 +166,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-300 ${
                 selectedTag === tag
                   ? 'bg-gradient-to-r from-[#D4A373] to-[#D8B4E2] text-white shadow-md scale-105'
-                  : 'bg-white/60 dark:bg-[#2B231F]/80 text-[#3A3A3A] dark:text-[#E8D8CD] hover:bg-white dark:hover:bg-[#2B231F]'
+                  : 'bg-white/60 dark:bg-[#4D0026]/80 text-[#3A3A3A] dark:text-[#E8D8CD] hover:bg-white dark:hover:bg-[#4D0026]'
               }`}
             >
               {tag}
@@ -195,14 +195,14 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                   className="glass-panel p-3 rounded-3xl border border-white/80 dark:border-[#D4A373]/25 overflow-hidden shadow-xl transition-all duration-500 cursor-pointer group relative flex flex-col justify-between"
                 >
                   {/* Floating Glass Frame Wrap */}
-                  <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-6 text-center border-b border-black/5">
+                  <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-6 text-center border-b border-[#660033]/10">
 
                     <div className="z-10">
                        <h3 className="font-serif-display text-2xl font-bold text-[#D4A373] mb-4">{item.title}</h3>
                     </div>
 
                     {/* Golden Sparkle Overlay on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#660033]/70 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
                       <div className="flex items-center justify-between">
                         <span className="px-3 py-1 rounded-full glass-gold text-white text-[10px] font-bold uppercase tracking-wider">
                           {item.category}
@@ -315,14 +315,14 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setEditingItem(null)}
-              className="fixed inset-0 bg-black/75 backdrop-blur-md"
+              className="fixed inset-0 bg-[#660033]/75 backdrop-blur-md"
             />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-lg glass-panel rounded-3xl border border-[#D4A373]/40 shadow-2xl overflow-hidden z-10 p-6 sm:p-8 bg-[#FAF7F2] dark:bg-[#231C18]"
+              className="relative w-full max-w-lg glass-panel rounded-3xl border border-[#D4A373]/40 shadow-2xl overflow-hidden z-10 p-6 sm:p-8 bg-[#FAF7F2] dark:bg-[#660033]"
             >
               <button
                 onClick={() => setEditingItem(null)}
@@ -411,7 +411,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveItem(null)}
-              className="fixed inset-0 bg-black/70 backdrop-blur-md"
+              className="fixed inset-0 bg-[#660033]/70 backdrop-blur-md"
             />
 
             <motion.div
@@ -427,7 +427,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="relative aspect-square md:aspect-auto overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#2B231F] dark:to-[#1A1412] flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-black/5">
+              <div className="relative aspect-square md:aspect-auto overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-[#660033]/10">
                  <h3 className="font-serif-display text-3xl font-bold text-[#D4A373] mb-4">{activeItem.title}</h3>
                  <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD] opacity-90">{activeItem.story}</p>
               </div>

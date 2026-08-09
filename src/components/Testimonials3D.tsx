@@ -24,7 +24,7 @@ export const Testimonials3D: React.FC = () => {
   const currentTestimonial = TESTIMONIALS_DATA[currentIndex];
 
   return (
-    <section id="testimonials" className="py-24 relative overflow-hidden bg-[#F5EFE6] dark:bg-[#1C1815]">
+    <section id="testimonials" className="py-24 relative overflow-hidden bg-[#F5EFE6] dark:bg-[#660033]">
       {/* Background Lighting */}
       <div className="absolute top-1/2 right-10 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -36,7 +36,7 @@ export const Testimonials3D: React.FC = () => {
               Heartfelt Stories
             </span>
           </div>
-          <h2 className="font-serif-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#2A2421] dark:text-[#F5EFE6] tracking-tight mb-4">
+          <h2 className="font-serif-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#660033] dark:text-[#F5EFE6] tracking-tight mb-4">
             Loved by Over <span className="italic font-serif-body text-gold-gradient font-normal">10,000 Families</span>
           </h2>
           <p className="text-base text-[#6B5E55] dark:text-[#C4B8AD] max-w-2xl mx-auto">

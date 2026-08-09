@@ -233,19 +233,19 @@ export const ContactSection: React.FC = () => {
                         placeholder="Enter mobile number"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#660033] border border-[#D4AF37]/30 text-sm text-[#660033] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="contact-event-type" className="block text-xs font-bold text-[#2A2421] dark:text-[#F5EFE6] mb-1.5">
+                      <label htmlFor="contact-event-type" className="block text-xs font-bold text-[#660033] dark:text-[#F5EFE6] mb-1.5">
                         Occasion / Service Type
                       </label>
                       <select
                         id="contact-event-type"
                         value={formData.eventType}
                         onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#12100E] border border-[#D4AF37]/30 text-sm text-[#2A2421] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-[#660033] border border-[#D4AF37]/30 text-sm text-[#660033] dark:text-[#F5EFE6] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]"
                       >
                         <option value="Wedding Garland Preservation">Wedding Garland Preservation</option>
                         <option value="Baby Milestone Keepsake">Baby Milestone Keepsake</option>

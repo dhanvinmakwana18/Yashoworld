@@ -82,8 +82,13 @@ export default function App() {
     }
 
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.8,
+      easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.5,
     });
 
     function raf(time: number) {
@@ -228,10 +233,12 @@ export default function App() {
   const seoImage = `${window.location.origin}/placeholder.png`;
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAF7F2] dark:bg-[#231C18] text-[#2D241E] dark:text-[#FAF7F2] transition-colors duration-500 relative">
+    <div className="min-h-[100dvh] bg-[#FAF7F2] dark:bg-[#660033] text-[#660033] dark:text-[#FAF7F2] transition-colors duration-300 relative">
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+        <meta name="theme-color" content="#660033" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
