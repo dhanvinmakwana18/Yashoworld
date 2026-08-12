@@ -19,7 +19,6 @@ import { CartDrawer } from './components/CartDrawer';
 import { Footer } from './components/Footer';
 import { LoadingScreen } from './components/LoadingScreen';
 import { Product, CartItem } from './types';
-import { PRODUCTS_DATA } from './data/products';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +31,8 @@ export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>(['yw-001', 'yw-002']);
   const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   const getSessionId = () => {
     let sessionId = localStorage.getItem('yasho_session_id');
@@ -43,14 +44,40 @@ export default function App() {
   };
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          let data = await response.json();
+          // Map database JSON strings back to arrays if needed
+          data = data.map((p: any) => ({
+            ...p,
+            features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features,
+            customizableOptions: typeof p.customizableOptions === 'string' ? JSON.parse(p.customizableOptions) : p.customizableOptions,
+            isBestSeller: p.isBestSeller === 1 || p.isBestSeller === true,
+            isNewArrival: p.isNewArrival === 1 || p.isNewArrival === true,
+          }));
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
     const fetchCart = async () => {
+      if (productsLoading) return; // Wait until products are loaded
       try {
         const sessionId = getSessionId();
         const response = await fetch(`/api/cart/${sessionId}`);
         if (response.ok) {
           const data = await response.json();
           const formattedItems = data.map((item: any) => {
-            const product = PRODUCTS_DATA.find(p => p.id === item.product_id);
+            const product = products.find(p => p.id === item.product_id);
             if (!product) return null;
             let parsedCustomizations = item.customizations;
             if (typeof parsedCustomizations === 'string') {
@@ -70,7 +97,7 @@ export default function App() {
       }
     };
     fetchCart();
-  }, []);
+  }, [productsLoading, products]);
 
   // Lenis Smooth Scroll Setup
   useEffect(() => {
@@ -301,15 +328,23 @@ export default function App() {
           isDarkTheme={isDarkTheme}
         />
         <StoryAbout />
-        <Product3DCards
-          onQuickView={(product) => setQuickViewProduct(product)}
-          onAddToCart={handleAddToCart}
-          onOpenCustomizer={() => setIsCustomizerOpen(true)}
-          wishlistIds={wishlistIds}
-          onToggleWishlist={handleToggleWishlist}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+        {productsLoading ? (
+          <div className="py-24 text-center min-h-[50vh] flex flex-col items-center justify-center">
+            <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-[#6B5E55] dark:text-[#C4B8AD] font-medium font-serif-display">Loading Masterpieces...</p>
+          </div>
+        ) : (
+          <Product3DCards
+            products={products}
+            onQuickView={(product) => setQuickViewProduct(product)}
+            onAddToCart={handleAddToCart}
+            onOpenCustomizer={() => setIsCustomizerOpen(true)}
+            wishlistIds={wishlistIds}
+            onToggleWishlist={handleToggleWishlist}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        )}
         <WhyChooseUs />
         <LuxuryGallery onOpenCustomizer={() => setIsCustomizerOpen(true)} />
         <OrderProcessTimeline onOpenCustomizer={() => setIsCustomizerOpen(true)} />

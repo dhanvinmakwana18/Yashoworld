@@ -14,48 +14,56 @@ export function useGsapStagger<T extends HTMLElement>(
     const el = containerRef.current;
     if (!el) return;
 
-    const items = el.querySelectorAll(staggerSelector);
+    const items = Array.from(el.querySelectorAll(staggerSelector)) as Element[];
     if (!items.length) return;
 
-    // Use IntersectionObserver for 60 FPS performance both on scroll down and scroll up
+    // Initial state for premium 3D entrance
+    gsap.set(items, {
+      opacity: 0,
+      y: 80,
+      scale: 0.85,
+      rotationX: 15,
+      filter: 'blur(12px)',
+    });
+
+    let batchedElements: Element[] = [];
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            gsap.to(items, {
+            batchedElements.push(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+
+        if (batchedElements.length > 0) {
+          if (timeoutId) clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            gsap.to(batchedElements, {
               opacity: 1,
               y: 0,
               scale: 1,
+              rotationX: 0,
               filter: 'blur(0px)',
-              duration: 0.8,
-              stagger: 0.08,
-              ease: 'power3.out',
-              clearProps: 'filter',
+              duration: 1.2,
+              stagger: 0.1,
+              ease: 'power4.out',
+              clearProps: 'filter,transform',
             });
-          } else {
-            // Determine direction to set starting position for smooth re-entry
-            const scrollY = window.scrollY || window.pageYOffset;
-            const rect = entry.boundingClientRect;
-            const isAbove = rect.top < 0;
-
-            gsap.to(items, {
-              opacity: 0,
-              y: isAbove ? -30 : 40,
-              scale: 0.96,
-              filter: 'blur(4px)',
-              duration: 0.5,
-              ease: 'power2.in',
-            });
-          }
-        });
+            batchedElements = [];
+          }, 50);
+        }
       },
-      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
     );
 
-    observer.observe(el);
+    items.forEach((item) => observer.observe(item));
 
     return () => {
       observer.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, deps);
 

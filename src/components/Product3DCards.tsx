@@ -13,7 +13,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { Product, ProductCategory } from '../types';
-import { PRODUCTS_DATA } from '../data/products';
+import { useGsapStagger } from '../utils/gsapAnimations';
 
 interface Product3DCardsProps {
   onQuickView: (product: Product) => void;
@@ -23,6 +23,7 @@ interface Product3DCardsProps {
   onToggleWishlist: (productId: string) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  products: Product[];
 }
 
 export const Product3DCards: React.FC<Product3DCardsProps> = ({
@@ -33,10 +34,12 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
   onToggleWishlist,
   searchQuery,
   onSearchChange,
+  products
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('All');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-low' | 'price-high' | 'rating'>('featured');
+  const staggerRef = useGsapStagger<HTMLDivElement>('.gsap-stagger-item', [selectedCategory, searchQuery, sortBy]);
 
   const activeSearchQuery = searchQuery !== undefined ? searchQuery : localSearchQuery;
 
@@ -64,7 +67,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return PRODUCTS_DATA.filter((product) => {
+    return products.filter((product) => {
       const matchesCategory =
         selectedCategory === 'All' || product.category === selectedCategory;
       const matchesSearch =
@@ -152,19 +155,21 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
         </div>
 
         {/* 3D Product Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
-          <AnimatePresence>
+        <div 
+          ref={staggerRef}
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 min-h-[500px]"
+          id="product-grid"
+        >
+          <AnimatePresence mode="popLayout">
             {filteredProducts.map((product) => {
               const isWishlisted = wishlistIds.includes(product.id);
               return (
                 <motion.div
                   key={product.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className="glass-panel rounded-2xl border border-white/80 dark:border-[#D4AF37]/25 overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group cursor-pointer relative"
+                  exit={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.3 }}
+                  className="gsap-stagger-item product-card glass-panel rounded-2xl border border-white/80 dark:border-[#D4AF37]/25 overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:rotate-y-2 hover:rotate-x-2 transition-all duration-300 flex flex-col justify-between group cursor-pointer relative perspective-1000"
                 >
                   {/* Card Badges */}
                   <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 flex flex-col gap-1">
@@ -195,15 +200,24 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                     <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                   </button>
 
-                  {/* Product Image Container (Replaced with Gradient/Text Block) */}
+                  {/* Product Image Container */}
                   <div
                     onClick={() => onQuickView(product)}
-                    className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-4 text-center border-b border-[#660033]/10"
+                    className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-0 text-center border-b border-[#660033]/10"
                   >
-                    <div className="z-10">
-                       <h3 className="font-serif-display text-lg sm:text-xl font-bold text-[#D4A373] mb-2">{product.name}</h3>
-                       <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] opacity-70 line-clamp-2">{product.description}</p>
-                    </div>
+                    {product.imageData ? (
+                      <img 
+                        src={product.imageData} 
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="z-10 p-4">
+                         <h3 className="font-serif-display text-lg sm:text-xl font-bold text-[#D4A373] mb-2">{product.name}</h3>
+                         <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] opacity-70 line-clamp-2">{product.description}</p>
+                      </div>
+                    )}
 
                     {/* Glass Reflection Glow Effect */}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#660033]/50 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">

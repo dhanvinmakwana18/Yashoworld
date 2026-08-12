@@ -11,9 +11,27 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ onOpenCustomizer }) => {
   return (
     <section aria-label="Hero Showcase" className="relative min-h-[100dvh] pt-28 pb-16 md:pt-36 md:pb-24 flex flex-col justify-center items-center overflow-hidden">
+      {/* HTML5 Premium VFX Background Loop (Optimized for ES6+ / HTML5 Performance) */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-30 mix-blend-luminosity"
+          poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+        >
+          {/* Example VFX Source rendered via FFmpeg/After Effects */}
+          <source src="https://cdn.pixabay.com/video/2020/05/25/40141-424564882_large.mp4" type="video/mp4" />
+        </video>
+        {/* Vignette Overlay for Depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2]/50 via-transparent to-[#FAF7F2] dark:from-[#660033]/80 dark:via-transparent dark:to-[#660033] pointer-events-none" />
+      </div>
+
       {/* Background Lighting Gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-[#F8E8EE]/40 via-[#D4A373]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-72 h-72 bg-[#D8B4E2]/15 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-[#F8E8EE]/40 via-[#D4A373]/15 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute top-1/3 left-10 w-72 h-72 bg-[#D8B4E2]/15 rounded-full blur-2xl pointer-events-none z-0" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">

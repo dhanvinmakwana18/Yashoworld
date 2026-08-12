@@ -96,9 +96,19 @@ Please reply with payment options and details. Thank you!`;
 
           {/* Left Column: Image Gallery */}
           <div className="p-6 bg-[#F5EFE6] dark:bg-[#660033] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#D4AF37]/20">
-            <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/80 dark:border-[#D4AF37]/30 shadow-lg mb-4 bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-6 text-center">
-               <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#D4A373] mb-4">{product.name}</h3>
-               <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD] opacity-90">{product.description}</p>
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/80 dark:border-[#D4AF37]/30 shadow-lg mb-4 bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-0 text-center">
+              {product.imageData ? (
+                <img 
+                  src={product.imageData} 
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="p-6">
+                  <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#D4A373] mb-4">{product.name}</h3>
+                  <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD] opacity-90">{product.description}</p>
+                </div>
+              )}
               <span className="absolute top-3 left-3 px-3 py-1 rounded-full glass-gold text-[#8B5E3C] dark:text-[#E5C158] text-[10px] font-bold uppercase z-10">
                 {product.resinClarity}
               </span>
