@@ -27,12 +27,7 @@ export const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-16 border-b border-[#D4AF37]/20">
             {/* Brand Info */}
             <div className="lg:col-span-2 space-y-4">
-              <a href="#" className="flex items-center gap-3 group cursor-pointer">
-                <img
-                  src="/images/logo.png"
-                  alt="YashoWorld Logo"
-                  className="w-10 h-10 object-contain rounded-full border border-[#D4AF37]/40 shadow-sm group-hover:scale-105 transition-transform duration-300"
-                />
+              <a href="#" className="flex items-center group cursor-pointer">
                 <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#FAF7F2]">
                   YASHO<span className="text-[#D4AF37]">WORLD</span>
                 </h1>
