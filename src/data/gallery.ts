@@ -1,0 +1,58 @@
+import { GalleryItem } from '../types';
+
+export const GALLERY_DATA: GalleryItem[] = [
+  {
+    id: 'gal-sig-1',
+    title: 'Custom Wedding Garland Preservation',
+    category: 'Wedding Keepsakes',
+    aspectRatio: 'portrait',
+    story: 'Preserved the beautiful varmala from a stunning winter wedding inside a solid wooden frame.',
+    date: 'February 2026',
+    likes: 1245,
+  },
+  {
+    id: 'gal-sig-2',
+    title: 'Dried Rose & Pearl Resin Coaster',
+    category: 'Resin Coasters',
+    aspectRatio: 'square',
+    story: 'A delicate red rose, pink bougainvillea leaf, and pearl accents suspended in crystal clear resin.',
+    date: 'March 2026',
+    likes: 980,
+  },
+  {
+    id: 'gal-sig-3',
+    title: 'Floral Memory Resin Art',
+    category: 'Floral Preservation',
+    aspectRatio: 'square',
+    story: 'Capturing the ephemeral beauty of nature in a timeless resin block.',
+    date: 'April 2026',
+    likes: 856,
+  },
+  {
+    id: 'gal-sig-4',
+    title: 'Royal Lavender & Gold Pooja Thali',
+    category: 'Pooja Thalis',
+    aspectRatio: 'square',
+    story: 'Handcrafted pearl lavender resin thali with golden Om motif and solid brass bowls.',
+    date: 'July 2026',
+    likes: 642,
+  },
+  {
+    id: 'gal-sig-5',
+    title: '"Forever" Real Preserved Keepsake Bookmark',
+    category: 'Bookmarks',
+    aspectRatio: 'portrait',
+    story: 'Crystal clear resin slab preserving a real dried deep purple velvet rose stem.',
+    date: 'August 2026',
+    likes: 928,
+  },
+  {
+    id: 'gal-sig-6',
+    title: 'Ocean Blue Peacock Feather Pooja Platter',
+    category: 'Pooja Thalis',
+    aspectRatio: 'square',
+    story: 'Preserved real peacock feather embedded in clear optical resin with deep ocean blue swirl.',
+    date: 'August 2026',
+    likes: 912,
+  },
+];

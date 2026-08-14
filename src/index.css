@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-canvas: #FAF7F2;
+    --bg-surface: #F4EFEA;
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(139, 94, 60, 0.25);
+    --text-primary: #660033;
+    --text-secondary: #4D0026;
+    --accent-rosegold: #8B4513;
+    --accent-blush: #F8E8EE;
+    --accent-lilac: #9C4153;
+  }
+
+  .dark {
+    --bg-canvas: #660033;
+    --bg-surface: #4D0026;
+    --bg-card: rgba(102, 0, 51, 0.95);
+    --border-color: rgba(212, 163, 115, 0.35);
+    --text-primary: #FAF7F2;
+    --text-secondary: #E8D8CD;
+    --accent-rosegold: #F3C06B;
+    --accent-blush: #4D0026;
+    --accent-lilac: #D8B4E2;
+  }
+
+  /* Low Latency & Touch Responsiveness Optimizations for Mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+    text-rendering: optimizeSpeed;
+  }
+
+  button, a, input, select, textarea, [role="button"] {
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+}
+
+/* Fast GPU Compositing for Smooth Mobile Motion & Lower Input Lag */
+.transform-gpu,
+.glass-panel,
+.glass-gold,
+button,
+.interactive-card {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Offscreen Section Rendering Deferred to Free Up Thread for Mobile Touch Events */
+@media (max-width: 768px) {
+  section:not(#hero) {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
+  }
+}
+
+.font-serif-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-sans {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Glassmorphism Utilities - High Contrast & Crisp Aesthetic */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 242, 236, 0.94) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 94, 60, 0.22);
+  box-shadow: 0 10px 30px rgba(139, 94, 60, 0.12);
+}
+
+.dark .glass-panel {
+  background: linear-gradient(135deg, rgba(102, 0, 51, 0.97) 0%, rgba(77, 0, 38, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 163, 115, 0.35);
+  box-shadow: 0 10px 30px rgba(102, 0, 51, 0.40);
+}
+
+.glass-gold {
+  background: linear-gradient(135deg, rgba(255, 250, 245, 0.97) 0%, rgba(248, 238, 234, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 94, 60, 0.30);
+  box-shadow: 0 10px 30px rgba(139, 94, 60, 0.15);
+}
+
+.dark .glass-gold {
+  background: linear-gradient(135deg, rgba(102, 0, 51, 0.97) 0%, rgba(77, 0, 38, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 163, 115, 0.40);
+  box-shadow: 0 10px 30px rgba(102, 0, 51, 0.45);
+}
+
+/* High-Contrast Gradient Text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #8B4513 0%, #B8860B 50%, #660033 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gold-gradient {
+  background: linear-gradient(135deg, #F3C06B 0%, #E8D8CD 50%, #D8B4E2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth scrolling and complete scrollbar concealment for clean, high-end luxury aesthetics */
+html {
+  scroll-behavior: smooth !important;
+  scroll-padding-top: 85px;
+}
+
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+html, body, div, section, main, article, aside, nav, form, ul, li {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* 3D tilt perspective container */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Keyframe animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.5deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.shimmer-effect {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(212,175,55,0.2) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
