@@ -10,19 +10,17 @@ import {
   X,
   Heart,
   Wand2,
-  Phone,
   Eye,
   Tag,
   ArrowRight,
-  SlidersHorizontal,
 } from 'lucide-react';
-import { PRODUCTS_DATA } from '../data/products';
 import { Product } from '../types';
 
 interface HeaderProps {
   cartCount: number;
   wishlistCount: number;
   onOpenCart: () => void;
+  onOpenWishlist: () => void;
   onOpenCustomizer: () => void;
   isDarkTheme: boolean;
   onToggleTheme: () => void;
@@ -31,20 +29,22 @@ interface HeaderProps {
   onSearchChange?: (query: string) => void;
   onQuickView?: (product: Product) => void;
   onAddToCart?: (product: Product) => void;
+  products?: Product[];
 }
 
 export const Header: React.FC<HeaderProps> = ({
   cartCount,
   wishlistCount,
   onOpenCart,
+  onOpenWishlist,
   onOpenCustomizer,
   isDarkTheme,
   onToggleTheme,
-  onSearchClick,
   searchQuery = '',
   onSearchChange,
   onQuickView,
   onAddToCart,
+  products = [],
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
@@ -126,28 +126,27 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  // Real-time filter PRODUCTS_DATA
-  const filteredProducts = PRODUCTS_DATA.filter((p) => {
+  // Real-time filter
+  const filteredProducts = products.filter((p) => {
     if (!localQuery.trim()) return true;
     const q = localQuery.toLowerCase();
     return (
       p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q) ||
-      p.features.some((f) => f.toLowerCase().includes(q))
+      (p.features && p.features.some((f) => f.toLowerCase().includes(q)))
     );
   }).slice(0, 6);
 
-  const quickSearchTags = ['Rose Bookmark', 'Pooja Thali', 'Wedding Keepsake', 'Resin Clock', 'Ganesha'];
+  const quickSearchTags = ['Pooja Thali', 'Wedding Keepsake', 'Name Plate', 'Rose Platter', 'Botanical'];
 
   const navLinks = [
-    { name: 'Story', href: '#story' },
     { name: 'Collection', href: '#products' },
-    { name: '3D Customizer', href: '#customizer', isSpecial: true },
+    { name: '3D Studio', href: '#customizer', isSpecial: true },
+    { name: 'Our Process', href: '#process' },
+    { name: 'Artisan Story', href: '#story' },
+    { name: 'Vault Gallery', href: '#gallery' },
     { name: 'Why Us', href: '#why-us' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Process', href: '#process' },
-    { name: 'Testimonials', href: '#testimonials' },
     { name: 'FAQ', href: '#faq' },
     { name: 'Contact', href: '#contact' },
   ];
@@ -162,7 +161,8 @@ export const Header: React.FC<HeaderProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 bg-[#660033]/60 backdrop-blur-xs z-40 lg:hidden"
+            className="fixed inset-0 bg-[#660033]/70 backdrop-blur-xs z-40 lg:hidden"
+            aria-hidden="true"
           />
         )}
       </AnimatePresence>
@@ -176,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
       <header
         className={`fixed top-0 left-0 right-0 transition-all duration-300 ${
           mobileMenuOpen
-            ? 'z-50 bg-[#F5EFE6] dark:bg-[#660033] py-4 shadow-2xl border-b border-[#D4AF37]/30'
+            ? 'z-50 bg-[#FAF7F2] dark:bg-[#2A0818] py-4 shadow-2xl border-b border-[#D4AF37]/30'
             : isScrolled
             ? scrollDirection === 'down'
               ? 'z-40 py-2.5 glass-panel shadow-md border-b border-[#D4AF37]/20 -translate-y-1 backdrop-blur-md'
@@ -185,9 +185,9 @@ export const Header: React.FC<HeaderProps> = ({
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Logo */}
-          <a href="#" className="flex items-center group cursor-pointer">
-            <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2]">
+          {/* Brand Logo */}
+          <a href="#" className="flex items-center group cursor-pointer" aria-label="YashoWorld Home">
+            <h1 className="font-serif-display text-xl sm:text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2]">
               YASHO<span className="text-[#D4AF37]">WORLD</span>
             </h1>
           </a>
@@ -207,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`transition-colors relative group py-1 ${
                   link.isSpecial
                     ? 'text-[#8B4513] dark:text-[#F3C06B] font-bold flex items-center gap-1.5'
-                    : 'text-[#660033] dark:text-[#E8D8CD] hover:text-[#8B4513] dark:hover:text-white font-semibold'
+                    : 'text-[#660033] dark:text-[#E8D8CD] hover:text-[#8B4513] dark:hover:text-[#FAF7F2] font-semibold'
                 }`}
               >
                 {link.isSpecial && <Wand2 className="w-3.5 h-3.5 text-[#8B4513] dark:text-[#F3C06B] animate-pulse" />}
@@ -218,14 +218,14 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Action Controls */}
-          <div className="flex items-center gap-2.5 sm:gap-3.5">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Real-time Interactive Search Component */}
             <div ref={searchContainerRef} className="relative">
               <div
                 className={`flex items-center transition-all duration-300 rounded-full border ${
                   isSearchOpen || localQuery
-                    ? 'w-48 sm:w-64 bg-white/90 dark:bg-[#2A2421]/90 border-[#D4A373] shadow-md px-3 py-1.5'
-                    : 'w-10 h-10 hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421] border-transparent justify-center cursor-pointer'
+                    ? 'w-48 sm:w-64 bg-white/95 dark:bg-[#3D0B23]/95 border-[#D4AF37] shadow-md px-3 py-1.5'
+                    : 'w-10 h-10 hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23] border-transparent justify-center cursor-pointer'
                 }`}
                 onClick={() => {
                   if (!isSearchOpen) {
@@ -234,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }
                 }}
               >
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#8B4513] dark:text-[#F3C06B] shrink-0" />
+                <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#8B4513] dark:text-[#F3C06B] shrink-0" />
                 {(isSearchOpen || localQuery) && (
                   <>
                     <input
@@ -244,7 +244,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onChange={handleInputChange}
                       onFocus={() => setIsSearchOpen(true)}
                       placeholder="Search resin art, thalis..."
-                      className="w-full bg-transparent border-none text-xs text-[#2D241E] dark:text-[#F5EFE6] focus:outline-none focus:ring-0 ml-2"
+                      className="w-full bg-transparent border-none text-xs text-[#660033] dark:text-[#FAF7F2] focus:outline-none focus:ring-0 ml-2"
                     />
                     {localQuery && (
                       <button
@@ -262,7 +262,7 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
 
-              {/* Real-time Search Popover Results Dropdown */}
+              {/* Real-time Search Dropdown */}
               <AnimatePresence>
                 {isSearchOpen && (
                   <motion.div
@@ -270,22 +270,22 @@ export const Header: React.FC<HeaderProps> = ({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-3 w-80 sm:w-96 glass-panel rounded-2xl border border-white/80 dark:border-[#D4A373]/30 shadow-2xl overflow-hidden z-50 p-4"
+                    className="absolute right-0 top-full mt-3 w-80 sm:w-96 glass-panel rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 shadow-2xl overflow-hidden z-50 p-4"
                   >
                     {/* Header tags */}
                     <div className="mb-3">
                       <div className="flex items-center justify-between text-[11px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider mb-2">
                         <span className="flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" /> Popular Keepsakes
+                          <Sparkles className="w-3 h-3" /> Popular Searches
                         </span>
-                        <span>{filteredProducts.length} items</span>
+                        <span>{filteredProducts.length} results</span>
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {quickSearchTags.map((tag) => (
                           <button
                             key={tag}
                             onClick={() => handleTagClick(tag)}
-                            className="text-[10px] px-2.5 py-1 rounded-full bg-[#FAF7F2] dark:bg-[#1A1412] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#12100E] text-[#5D4E42] dark:text-[#E8D8CD] transition-colors border border-[#D4A373]/20 flex items-center gap-1 font-medium"
+                            className="text-[10px] px-2.5 py-1 rounded-full bg-[#FAF7F2] dark:bg-[#2A0818] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#2A0818] text-[#660033] dark:text-[#E8D8CD] transition-colors border border-[#D4AF37]/20 flex items-center gap-1 font-medium"
                           >
                             <Tag className="w-2.5 h-2.5" />
                             {tag}
@@ -300,25 +300,29 @@ export const Header: React.FC<HeaderProps> = ({
                         filteredProducts.map((product) => (
                           <div
                             key={product.id}
-                            className="flex items-center justify-between p-2 rounded-xl bg-white/60 dark:bg-[#1E1815]/60 hover:bg-[#F5EFE6] dark:hover:bg-[#2A2421] border border-transparent hover:border-[#D4A373]/30 transition-all group"
+                            className="flex items-center justify-between p-2 rounded-xl bg-white/60 dark:bg-[#3D0B23]/60 hover:bg-[#FAF7F2] dark:hover:bg-[#4D0026] border border-transparent hover:border-[#D4AF37]/30 transition-all group"
                           >
                             <div className="flex items-center gap-3">
-                              {product.image && (
+                              {product.imageData || product.image ? (
                                 <img
-                                  src={product.image}
+                                  src={product.imageData || product.image}
                                   alt={product.name}
-                                  className="w-11 h-11 rounded-lg object-cover border border-white/80 dark:border-[#D4A373]/20 shadow-sm"
+                                  className="w-10 h-10 rounded-lg object-cover border border-white/80 dark:border-[#D4AF37]/20 shadow-xs"
                                 />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-[#FAF7F2] dark:bg-[#2A0818] flex items-center justify-center text-[10px] font-bold text-[#8B4513] dark:text-[#F3C06B]">
+                                  ✦
+                                </div>
                               )}
                               <div>
-                                <h4 className="text-xs font-bold text-[#2A2421] dark:text-[#FAF7F2] line-clamp-1 group-hover:text-[#8B4513] dark:group-hover:text-[#F3C06B] transition-colors">
+                                <h4 className="text-xs font-bold text-[#660033] dark:text-[#FAF7F2] line-clamp-1 group-hover:text-[#8B4513] dark:group-hover:text-[#F3C06B] transition-colors">
                                   {product.name}
                                 </h4>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[10px] font-semibold text-[#8B5E3C] dark:text-[#D4AF37]">
+                                  <span className="text-[10px] font-semibold text-[#8B4513] dark:text-[#F3C06B]">
                                     ₹{product.price.toLocaleString('en-IN')}
                                   </span>
-                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#E8D8C4]/50 dark:bg-[#2D241E] text-[#5D4E42] dark:text-[#C4B8AD]">
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#FAF7F2] dark:bg-[#2A0818] text-[#8B5E3C] dark:text-[#D4AF37]">
                                     {product.category}
                                   </span>
                                 </div>
@@ -333,7 +337,8 @@ export const Header: React.FC<HeaderProps> = ({
                                     onQuickView(product);
                                   }}
                                   title="Quick View"
-                                  className="p-1.5 rounded-lg bg-white/80 dark:bg-[#2D241E] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] text-[#2D241E] dark:text-[#FAF7F2] transition-colors"
+                                  aria-label="Quick View"
+                                  className="p-1.5 rounded-lg bg-white/80 dark:bg-[#2A0818] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#2A0818] text-[#660033] dark:text-[#FAF7F2] transition-colors"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                 </button>
@@ -344,7 +349,8 @@ export const Header: React.FC<HeaderProps> = ({
                                     onAddToCart(product);
                                   }}
                                   title="Add to Cart"
-                                  className="p-1.5 rounded-lg bg-[#8B5E3C] text-white hover:bg-[#4A3728] dark:bg-[#D4AF37] dark:text-[#12100E] transition-colors shadow-xs"
+                                  aria-label="Add to Cart"
+                                  className="p-1.5 rounded-lg bg-[#8B5E3C] text-white hover:bg-[#660033] dark:bg-[#D4AF37] dark:text-[#2A0818] transition-colors shadow-xs"
                                 >
                                   <ShoppingBag className="w-3.5 h-3.5" />
                                 </button>
@@ -361,7 +367,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                     {/* View All Collection CTA */}
                     <div className="pt-2 mt-2 border-t border-[#D4AF37]/20 flex justify-between items-center text-[10px]">
-                      <span className="text-[#5D4E42] dark:text-[#C4B8AD]">Real-time Python Engine Active</span>
+                      <span className="text-[#8B5E3C] dark:text-[#E8D8CD]">Handmade in Studio</span>
                       <button
                         onClick={() => {
                           setIsSearchOpen(false);
@@ -372,7 +378,7 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className="font-bold text-[#8B4513] dark:text-[#F3C06B] flex items-center gap-1 hover:underline"
                       >
-                        View Collection <ArrowRight className="w-3 h-3" />
+                        View Full Vault <ArrowRight className="w-3 h-3" />
                       </button>
                     </div>
                   </motion.div>
@@ -380,11 +386,29 @@ export const Header: React.FC<HeaderProps> = ({
               </AnimatePresence>
             </div>
 
+            {/* Wishlist Button */}
+            <button
+              onClick={onOpenWishlist}
+              aria-label="Open Wishlist Vault"
+              className="relative p-2 sm:p-2.5 rounded-full hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23] text-[#660033] dark:text-[#FAF7F2] transition-colors"
+            >
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[#660033] dark:text-[#FAF7F2]" />
+              {wishlistCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-1 right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center shadow-md"
+                >
+                  {wishlistCount}
+                </motion.span>
+              )}
+            </button>
+
             {/* Theme Switcher */}
             <button
               onClick={onToggleTheme}
               aria-label="Toggle Light/Dark Theme"
-              className="p-2 sm:p-2.5 rounded-full hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421] text-[#2D241E] dark:text-[#F5EFE6] transition-colors"
+              className="p-2 sm:p-2.5 rounded-full hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23] text-[#660033] dark:text-[#FAF7F2] transition-colors"
             >
               {isDarkTheme ? (
                 <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
@@ -397,14 +421,14 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenCart}
               aria-label="Shopping Cart"
-              className="relative p-2 sm:p-2.5 rounded-full hover:bg-[#E8D8C4]/40 dark:hover:bg-[#2A2421] text-[#2D241E] dark:text-[#F5EFE6] transition-colors"
+              className="relative p-2 sm:p-2.5 rounded-full hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23] text-[#660033] dark:text-[#FAF7F2] transition-colors"
             >
-              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-[#2D241E] dark:text-[#F5EFE6]" />
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-[#660033] dark:text-[#FAF7F2]" />
               {cartCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-1 right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#8B5E3C] text-white text-[10px] sm:text-xs font-bold flex items-center justify-center shadow-md"
+                  className="absolute top-1 right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] text-[9px] sm:text-[10px] font-bold flex items-center justify-center shadow-md"
                 >
                   {cartCount}
                 </motion.span>
@@ -414,24 +438,24 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Custom Order CTA Button */}
             <button
               onClick={onOpenCustomizer}
-              className="hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#4A3728] dark:bg-[#8B5E3C] text-[#F5EFE6] hover:bg-[#8B5E3C] dark:hover:bg-[#D4AF37] dark:hover:text-[#12100E] text-[10px] uppercase tracking-widest font-bold shadow-md hover:shadow-lg transition-all duration-300"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#8B5E3C] to-[#660033] dark:from-[#D4AF37] dark:to-[#AA7C11] text-white dark:text-[#2A0818] hover:brightness-105 text-[10px] uppercase tracking-widest font-bold shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <Wand2 className="w-3.5 h-3.5 text-[#D4AF37] dark:text-inherit" />
-              <span>Custom Order</span>
+              <Wand2 className="w-3.5 h-3.5 text-[#D4AF37] dark:text-[#2A0818]" />
+              <span>3D Studio</span>
             </button>
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Mobile Menu"
-              className="lg:hidden p-2 rounded-lg text-[#660033] dark:text-[#F5EFE6]"
+              className="lg:hidden p-2 rounded-lg text-[#660033] dark:text-[#FAF7F2]"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Opaque Full-Screen Drawer Menu */}
+        {/* Mobile Full-Screen Drawer Menu */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -439,9 +463,9 @@ export const Header: React.FC<HeaderProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-50 bg-[#F5EFE6] dark:bg-[#660033] flex flex-col justify-between p-6 overflow-y-auto lg:hidden"
+              className="fixed inset-0 z-50 bg-[#FAF7F2] dark:bg-[#2A0818] flex flex-col justify-between p-6 overflow-y-auto lg:hidden"
             >
-              {/* Mobile Drawer Top Bar */}
+              {/* Top Bar */}
               <div className="flex items-center justify-between pb-6 border-b border-[#D4AF37]/20">
                 <a
                   href="#"
@@ -456,13 +480,13 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close Menu"
-                  className="p-2.5 rounded-full bg-[#E8D8C4]/60 dark:bg-[#4D0026] text-[#660033] dark:text-[#F5EFE6]"
+                  className="p-2.5 rounded-full bg-[#FAF7F2] dark:bg-[#3D0B23] text-[#660033] dark:text-[#FAF7F2]"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              {/* Mobile Menu Links */}
+              {/* Navigation Links */}
               <div className="flex flex-col gap-2 py-6 my-auto">
                 {navLinks.map((link) => (
                   <a
@@ -475,15 +499,15 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenCustomizer();
                       }
                     }}
-                    className={`text-lg font-serif-display font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between ${
+                    className={`text-base font-serif-display font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-between ${
                       link.isSpecial
-                        ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#660033] font-bold shadow-md'
-                        : 'text-[#660033] dark:text-[#F5EFE6] hover:bg-[#E8D8C4]/40 dark:hover:bg-[#4D0026]'
+                        ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#2A0818] font-bold shadow-md'
+                        : 'text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23]'
                     }`}
                   >
                     <span>{link.name}</span>
                     {link.isSpecial ? (
-                      <Wand2 className="w-5 h-5 text-amber-200 dark:text-[#660033]" />
+                      <Wand2 className="w-4 h-4 text-amber-200 dark:text-[#2A0818]" />
                     ) : (
                       <span className="text-xs text-[#D4AF37] font-sans font-bold">→</span>
                     )}
@@ -491,17 +515,28 @@ export const Header: React.FC<HeaderProps> = ({
                 ))}
               </div>
 
-              {/* Mobile Drawer Bottom Action */}
+              {/* Bottom Actions */}
               <div className="pt-4 border-t border-[#D4AF37]/20 flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenWishlist();
+                  }}
+                  className="w-full py-3 rounded-xl bg-white dark:bg-[#3D0B23] border border-[#D4AF37]/30 text-[#660033] dark:text-[#FAF7F2] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+                >
+                  <Heart className="w-4 h-4 text-rose-500" />
+                  <span>View Saved Vault ({wishlistCount})</span>
+                </button>
+
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     onOpenCustomizer();
                   }}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#8B5E3C] to-[#660033] dark:from-[#D4AF37] dark:to-[#AA7C11] text-white dark:text-[#660033] font-bold text-xs uppercase tracking-widest text-center flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B5E3C] to-[#660033] dark:from-[#D4AF37] dark:to-[#AA7C11] text-white dark:text-[#2A0818] font-bold text-xs uppercase tracking-widest text-center flex items-center justify-center gap-2 shadow-lg"
                 >
                   <Wand2 className="w-4 h-4" />
-                  <span>3D Custom Order Builder</span>
+                  <span>3D Bespoke Order Studio</span>
                 </button>
               </div>
             </motion.div>
