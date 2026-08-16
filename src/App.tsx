@@ -8,6 +8,7 @@ import { Hero } from './components/Hero';
 import { StoryAbout } from './components/StoryAbout';
 import { Product3DCards } from './components/Product3DCards';
 import { InteractiveCustomizerModal } from './components/InteractiveCustomizerModal';
+import { ScrollExpand } from './components/ScrollExpand';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { LuxuryGallery } from './components/LuxuryGallery';
 import { OrderProcessTimeline } from './components/OrderProcessTimeline';
@@ -376,6 +377,53 @@ export default function App() {
           isDarkTheme={isDarkTheme}
         />
         <StoryAbout />
+
+        {/* Interactive Scroll Expand Feature Showcase */}
+        <section aria-label="Artisan Resin Mastery Showcase" className="relative w-full overflow-hidden my-4 sm:my-8">
+          <ScrollExpand
+            src="/images/resin_scroll_hero.jpg"
+            alt="Handcrafted Rose & Gold Leaf Resin Art Masterpiece"
+            title="Preserving Life's Golden Moments"
+            scrollHint="Scroll to Unfold the Artistry ↓"
+            useWindowScroll={true}
+            startWidth={50}
+            startHeight={60}
+            startRadius={28}
+            endRadius={0}
+            mediaZoom={1.3}
+            scrollDistance={1.0}
+            holdDistance={0.25}
+            smoothing={0.08}
+            overlayScrim={0.5}
+          >
+            <div className="max-w-2xl px-6 py-8 text-center text-white flex flex-col items-center">
+              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#F3C06B] mb-3 drop-shadow-md">
+                100% UV-Cured Optical Crystal Resin
+              </span>
+              <h2 className="font-serif-display text-2xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight text-white drop-shadow-lg">
+                Where Delicate Petals Meet Eternal Glass
+              </h2>
+              <p className="text-xs sm:text-sm md:text-base text-[#FAF7F2]/90 leading-relaxed mb-6 max-w-xl font-light drop-shadow-md">
+                Every single bubble is extracted under high-pressure vacuum chambers, ensuring pure clarity that will never yellow or cloud over generations.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <a
+                  href="#products"
+                  className="px-6 py-3 rounded-full bg-[#D4AF37] text-[#2A0818] font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl hover:scale-105"
+                >
+                  Explore The Vault
+                </a>
+                <button
+                  onClick={() => setIsCustomizerOpen(true)}
+                  className="px-6 py-3 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-xs uppercase tracking-widest hover:bg-white/30 transition-all shadow-lg hover:scale-105"
+                >
+                  Create Your Keepsake
+                </button>
+              </div>
+            </div>
+          </ScrollExpand>
+        </section>
+
         {productsLoading ? (
           <div className="py-24 text-center min-h-[50vh] flex flex-col items-center justify-center">
             <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
