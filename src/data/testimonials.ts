@@ -51,4 +51,44 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
     productOrdered: 'Pressed Petal Resin Coaster Set',
     rating: 5,
   },
+  {
+    id: 'test-6',
+    author: 'Anjali Desai',
+    role: 'New Mother',
+    location: 'Pune, India',
+    content:
+      'The custom baby footprint cast they did in crystal resin is the most precious thing I own. The details are immaculately preserved, and it looks like a piece of high-end glass decor in our nursery.',
+    productOrdered: '3D Baby Casting Resin Mount',
+    rating: 5,
+  },
+  {
+    id: 'test-7',
+    author: 'Rajesh Nair',
+    role: 'Corporate Executive',
+    location: 'Chennai, India',
+    content:
+      'I commissioned YashoWorld for our corporate milestone awards. We wanted something beyond standard crystal trophies. They embedded our logo inside a dark walnut wood and gold resin block. Absolute perfection.',
+    productOrdered: 'Bespoke Corporate Recognition Blocks',
+    rating: 5,
+  },
+  {
+    id: 'test-8',
+    author: 'Kriti & Aman Singh',
+    role: 'Couples',
+    location: 'Kolkata, India',
+    content:
+      'We sent our 5-year-old dried anniversary roses, unsure if they could be saved. They revived the arrangement in a stunning hexagonal block. It looks exactly like the day we got married. A priceless heirloom.',
+    productOrdered: 'Hexagon Floral Preservation Block',
+    rating: 4.9,
+  },
+  {
+    id: 'test-9',
+    author: 'Sunita Agarwal',
+    role: 'Interior Designer',
+    location: 'Ahmedabad, India',
+    content:
+      'The pooja thali I ordered was beyond expectations. The mirror polish and the depth of the gold foil inside the resin makes it look so rich. I have started recommending YashoWorld pieces to all my clients.',
+    productOrdered: 'Royal Lavender & Gold Om Pooja Thali',
+    rating: 5,
+  }
 ];

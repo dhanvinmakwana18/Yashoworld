@@ -1,11 +1,18 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { db } from './src/db/index';
-import { gallery, products } from './src/db/schema';
+import { gallery, products, testimonials } from './src/db/schema';
 import { desc, eq, asc } from 'drizzle-orm';
 import multer from 'multer';
 import fs from 'fs';
 import * as dbService from './src/services/dbService';
+
+if (!process.env.DEVELOPER_SECRET) {
+  console.error("ERROR: DEVELOPER_SECRET environment variable is missing.");
+  console.error("Please add DEVELOPER_SECRET=your_secret to your .env file.");
+  process.exit(1);
+}
 
 const app = express();
 
@@ -22,7 +29,7 @@ const checkAuth = (req: express.Request, res: express.Response, next: express.Ne
   const authHeader = req.headers.authorization;
   const secretHeader = req.headers['x-developer-mode-key'];
   
-  const expectedSecret = process.env.DEV_MODE_SECRET || 'yashoworld_developer_secret_key_2026';
+  const expectedSecret = process.env.DEVELOPER_SECRET;
   
   let token = '';
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -45,6 +52,15 @@ app.get('/api/products', async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+app.get('/api/testimonials', async (req, res) => {
+  try {
+    const data = await db.select().from(testimonials).orderBy(asc(testimonials.id));
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch testimonials' });
   }
 });
 

@@ -45,7 +45,7 @@ export const WhyChooseUs: React.FC = () => {
   ];
 
   return (
-    <section id="why-us" aria-label="Why Choose YashoWorld" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#231C18]">
+    <section id="why-us" aria-label="Why Choose YashoWorld" className="w-full h-screen min-h-[700px] overflow-y-auto snap-start py-24 relative bg-[#FAF7F2] dark:bg-[#231C18]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-gold border border-[#D4A373]/30 mb-4 shadow-sm">

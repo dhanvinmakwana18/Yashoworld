@@ -186,8 +186,13 @@ export const Header: React.FC<HeaderProps> = ({
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo */}
-          <a href="#" className="flex items-center group cursor-pointer" aria-label="YashoWorld Home">
-            <h1 className="font-serif-display text-xl sm:text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2]">
+          <a href="#" className="flex items-center gap-2.5 shrink-0 group cursor-pointer" aria-label="YashoWorld Home">
+            <img
+              src="/images/logo.png"
+              alt="YashoWorld Logo"
+              className="w-9 h-9 object-contain rounded-full border border-[#D4AF37]/30 shadow-xs group-hover:scale-105 transition-transform duration-300"
+            />
+            <h1 className="font-serif-display text-xl sm:text-2xl font-bold tracking-widest text-[#660033] dark:text-[#FAF7F2] whitespace-nowrap">
               YASHO<span className="text-[#D4AF37]">WORLD</span>
             </h1>
           </a>

@@ -9,16 +9,16 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <div className="relative z-10">
+    <div id="footer" className="relative z-10 w-full h-screen min-h-[600px] flex flex-col justify-end snap-start bg-[#120D10]">
       {/* Refined Gold Accent Divider Line */}
-      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-transparent" />
+      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-transparent absolute top-0" />
 
       <motion.footer
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
+        viewport={{ once: true }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="relative bg-[#660033] text-[#F5EFE6] pt-20 pb-12 overflow-hidden"
+        className="relative text-[#F5EFE6] pt-20 pb-12 overflow-hidden w-full"
       >
         {/* Golden Ambient Ambient Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-[#D4AF37]/15 via-[#8B5E3C]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -27,7 +27,12 @@ export const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-16 border-b border-[#D4AF37]/20">
             {/* Brand Info */}
             <div className="lg:col-span-2 space-y-4">
-              <a href="#" className="flex items-center group cursor-pointer">
+              <a href="#" className="flex items-center gap-3 group cursor-pointer">
+                <img
+                  src="/images/logo.png"
+                  alt="YashoWorld Logo"
+                  className="w-10 h-10 object-contain rounded-full border border-[#D4AF37]/40 shadow-sm group-hover:scale-105 transition-transform duration-300"
+                />
                 <h1 className="font-serif-display text-2xl font-bold tracking-widest text-[#FAF7F2]">
                   YASHO<span className="text-[#D4AF37]">WORLD</span>
                 </h1>
@@ -128,24 +133,21 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Bottom Bar - Minimal & Luxurious */}
-          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-[#C4B8AD] font-light">
-            {/* Copyright */}
-            <p className="tracking-wide text-center md:text-left">
-              © 2026 YashoWorld. All Rights Reserved.
-            </p>
-
-            {/* Credit - MAKWANA INDUSTRIES */}
-            <div className="flex items-center gap-2 text-center md:text-right">
-              <span className="opacity-80">Designed & Developed by</span>
+          <div className="pt-8 flex flex-col items-center gap-6 text-xs text-[#C4B8AD] font-light">
+            {/* Copyright & Credit Stacked */}
+            <div className="flex flex-col items-center gap-1 text-center font-serif-body tracking-wider">
+              <p>© 2026 YashoWorld.</p>
+              <p>All Rights Reserved.</p>
+              <p className="mt-4 text-[10px] text-[#A6998E]">Designed & Developed by</p>
               <a
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="relative inline-block font-bold tracking-widest uppercase text-[#E5C158] hover:text-[#D4AF37] transition-all duration-300 group py-0.5"
+                className="relative inline-block font-serif-display font-bold tracking-[0.2em] uppercase text-[#E5C158] hover:text-[#D4AF37] transition-all duration-300 group py-1"
               >
-                MAKWANA INDUSTRIES
+                Makwana Industries.
                 <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] transition-all duration-300 ease-out group-hover:w-full" />
               </a>
             </div>

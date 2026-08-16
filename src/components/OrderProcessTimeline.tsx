@@ -1,134 +1,199 @@
-import React, { useState } from 'react';
-import { Sparkles, LayoutGrid, PackageCheck, CheckCircle2, Gift, ArrowRight } from 'lucide-react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { Sparkles, LayoutGrid, PackageCheck, CheckCircle2, Gift } from 'lucide-react';
 import { ORDER_PROCESS_STEPS } from '../data/timeline';
-import { useGsapStagger } from '../utils/gsapAnimations';
 
 interface OrderProcessTimelineProps {
   onOpenCustomizer: () => void;
 }
 
+// Sub-component to follow the Rules of Hooks for useTransform
+const StepImage = ({ 
+  step, 
+  index, 
+  totalSteps, 
+  scrollYProgress, 
+  imageSrc 
+}: { 
+  step: any, 
+  index: number, 
+  totalSteps: number, 
+  scrollYProgress: any, 
+  imageSrc: string 
+}) => {
+  const stepProgress = 1 / totalSteps;
+  
+  let input: number[];
+  let output: number[];
+
+  if (index === 0) {
+    // First image is fully visible at start
+    input = [0, 0.5 * stepProgress, stepProgress];
+    output = [1, 1, 0];
+  } else if (index === totalSteps - 1) {
+    // Last image stays visible at end
+    input = [(index - 1) * stepProgress, (index - 0.5) * stepProgress, 1];
+    output = [0, 1, 1];
+  } else {
+    // Middle images fade in and out
+    input = [(index - 0.5) * stepProgress, index * stepProgress, (index + 0.5) * stepProgress];
+    output = [0, 1, 0];
+  }
+  
+  // Ensure values are strictly increasing to prevent WAAPI crash
+  for (let i = 1; i < input.length; i++) {
+    if (input[i] <= input[i - 1]) {
+      input[i] = input[i - 1] + 0.001;
+    }
+  }
+  
+  const opacity = useTransform(scrollYProgress, input, output);
+
+  return (
+    <motion.img
+      src={imageSrc}
+      alt={step.title}
+      className="absolute inset-0 w-full h-full object-cover"
+      style={{ opacity }}
+      onError={(e) => {
+        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80';
+      }}
+    />
+  );
+};
+
 export const OrderProcessTimeline: React.FC<OrderProcessTimelineProps> = ({ onOpenCustomizer }) => {
-  const [activeStep, setActiveStep] = useState<number>(1);
-  const containerRef = useGsapStagger<HTMLDivElement>('.gsap-process-step');
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
 
   const getStepIcon = (iconName: string) => {
     switch (iconName) {
-      case 'LayoutGrid':
-        return LayoutGrid;
-      case 'PackageCheck':
-        return PackageCheck;
-      case 'Sparkles':
-        return Sparkles;
-      case 'CheckCircle2':
-        return CheckCircle2;
-      case 'Gift':
-        return Gift;
-      default:
-        return Sparkles;
+      case 'LayoutGrid': return LayoutGrid;
+      case 'PackageCheck': return PackageCheck;
+      case 'Sparkles': return Sparkles;
+      case 'CheckCircle2': return CheckCircle2;
+      case 'Gift': return Gift;
+      default: return Sparkles;
     }
   };
 
+  const images = [
+    '/images/gallery/varmala_hex.jpg',
+    '/images/gallery/shipping_box.jpg',
+    '/images/gallery/pouring_resin.jpg',
+    '/images/gallery/polishing.jpg',
+    '/images/gallery/gift_box.jpg'
+  ];
+
   return (
-    <section id="process" aria-label="Order Process Timeline" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#231C18]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-gold border border-[#D4A373]/30 mb-4 shadow-sm">
-            <Sparkles className="w-4 h-4 text-[#D4A373]" />
-            <span className="text-xs font-semibold tracking-wide text-[#2D2421] dark:text-[#E8D8CD] uppercase">
-              Seamless Ordering Experience
-            </span>
-          </div>
-          <h2 className="font-serif-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#2D2421] dark:text-[#FAF7F2] tracking-tight mb-4">
-            How Your Memory Journey <br />
-            <span className="italic font-serif-body text-gold-gradient font-normal">Unfolds</span>
-          </h2>
-          <p className="text-base text-[#3A3A3A] dark:text-[#E8D8CD] max-w-2xl mx-auto">
-            From sending your fresh bridal garland or baby tokens to receiving your hand-polished luxury wooden gift casing.
-          </p>
-        </div>
+    <section 
+      id="process" 
+      ref={containerRef}
+      className="relative w-full h-screen overflow-y-auto snap-start text-[#FAF7F2]"
+    >
+      {/* Cinematic Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/images/bg-process.jpg" 
+          alt="Molten Gold Resin Process" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      </div>
 
-        {/* Horizontal Stepper Timeline */}
-        <div className="relative mb-16">
-          {/* Connecting Line for Desktop */}
-          <div className="hidden lg:block absolute top-1/2 left-10 right-10 h-1 bg-[#D4A373]/20 -translate-y-6 z-0" />
-          
-          <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 relative z-10">
-            {ORDER_PROCESS_STEPS.map((stepItem) => {
-              const IconComp = getStepIcon(stepItem.iconName);
-              const isActive = activeStep === stepItem.step;
-
-              return (
-                <div
-                  key={stepItem.step}
-                  onClick={() => setActiveStep(stepItem.step)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      setActiveStep(stepItem.step);
-                    }
-                  }}
-                  aria-pressed={isActive}
-                  aria-label={`Step ${stepItem.step}: ${stepItem.title}`}
-                  className={`gsap-process-step glass-panel p-6 rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
-                    isActive
-                      ? 'border-[#D4A373] shadow-2xl scale-105 bg-white/95 dark:bg-[#2B231F]/95'
-                      : 'border-white/70 dark:border-[#D4A373]/20 hover:border-[#D4A373]/50'
-                  }`}
-                >
-                  <div>
-                    {/* Step Number & Icon */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shadow-md transition-all ${
-                          isActive
-                            ? 'bg-gradient-to-tr from-[#D4A373] to-[#D8B4E2] text-white'
-                            : 'bg-[#F8E8EE] dark:bg-[#2B231F] text-[#D4A373] dark:text-[#D8B4E2]'
-                        }`}
-                      >
-                        <IconComp className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-mono font-bold text-[#D4A373]">
-                        0{stepItem.step}
-                      </span>
-                    </div>
-
-                    {/* Step Titles */}
-                    <span className="text-[10px] uppercase font-bold text-[#D4A373] dark:text-[#D8B4E2] block mb-1">
-                      {stepItem.duration}
-                    </span>
-                    <h3 className="font-serif-display text-lg font-bold text-[#2D2421] dark:text-[#FAF7F2] mb-2">
-                      {stepItem.title}
-                    </h3>
-                    <p className="text-xs text-[#3A3A3A] dark:text-[#E8D8CD] leading-relaxed">
-                      {stepItem.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col md:flex-row relative z-10">
+        
+        {/* Left Side: Sticky Visuals */}
+        <div className="w-full md:w-1/2 md:sticky top-0 h-[60vh] md:h-screen flex items-center justify-center p-4 md:p-8">
+          <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl glass-panel">
+            {ORDER_PROCESS_STEPS.map((step, index) => (
+              <StepImage 
+                key={step.step}
+                step={step}
+                index={index}
+                totalSteps={ORDER_PROCESS_STEPS.length}
+                scrollYProgress={scrollYProgress}
+                imageSrc={images[index]}
+              />
+            ))}
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#660033]/60 via-transparent to-transparent opacity-60" />
           </div>
         </div>
 
-        {/* CTA Card */}
-        <div className="glass-gold p-8 sm:p-10 rounded-3xl border border-[#D4A373]/40 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-          <div>
-            <h3 className="font-serif-display text-2xl font-bold text-[#2D2421] dark:text-[#FAF7F2] mb-2">
-              Ready to Preserve Your Memory?
-            </h3>
-            <p className="text-sm text-[#3A3A3A] dark:text-[#E8D8CD]">
-              Our artists are ready to guide you on flower packing and custom engraving choices.
+        {/* Right Side: Scrolling Text Content */}
+        <div className="w-full md:w-1/2 py-[10vh] md:py-[50vh] flex flex-col gap-[30vh]">
+          {/* Intro Header */}
+          <div className="mb-[20vh]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 mb-6">
+              <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+              <span className="text-xs font-bold tracking-widest text-[#D4AF37] uppercase">
+                The Artisanal Journey
+              </span>
+            </div>
+            <h2 className="font-serif-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              How Your Memory <br />
+              <span className="italic text-[#D4AF37] font-normal">Unfolds</span>
+            </h2>
+            <p className="text-lg font-light text-[#5D4E42] dark:text-[#C4B8AD] max-w-md leading-relaxed">
+              From fresh flowers to a crystallized masterpiece. Explore our meticulous 14-day preservation process.
             </p>
           </div>
 
-          <button
-            onClick={onOpenCustomizer}
-            className="px-8 py-4 rounded-full bg-[#D4A373] text-white font-semibold text-sm tracking-wide flex items-center gap-3 shadow-xl hover:bg-[#2D241E] transition-all whitespace-nowrap focus:outline-hidden focus:ring-2 focus:ring-[#D4A373]"
-          >
-            <span>Start Custom Order</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          {/* Steps */}
+          {ORDER_PROCESS_STEPS.map((stepItem, index) => {
+            const IconComp = getStepIcon(stepItem.iconName);
+            return (
+              <motion.div 
+                key={stepItem.step}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ margin: "-20% 0px -20% 0px", once: false }}
+                transition={{ duration: 0.6 }}
+                className="max-w-lg glass-panel p-8 md:p-12 rounded-[2rem] border border-[#D4AF37]/20 shadow-xl relative"
+              >
+                {/* Connecting Line between steps (except last) */}
+                {index !== ORDER_PROCESS_STEPS.length - 1 && (
+                  <div className="hidden md:block absolute left-12 bottom-[-30vh] w-px h-[30vh] bg-gradient-to-b from-[#D4AF37]/40 to-transparent z-[-1]" />
+                )}
+                
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#660033] to-[#8B4513] text-[#FAF7F2] flex items-center justify-center shadow-lg relative overflow-hidden">
+                    <IconComp className="w-8 h-8 relative z-10" />
+                    <div className="absolute inset-0 bg-[#D4AF37] opacity-20 mix-blend-overlay" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-[0.2em] block mb-1">
+                      Step 0{stepItem.step} — {stepItem.duration}
+                    </span>
+                    <h3 className="font-serif-display text-2xl md:text-3xl font-bold text-[#2A0818] dark:text-[#FAF7F2]">
+                      {stepItem.title}
+                    </h3>
+                  </div>
+                </div>
+                
+                <h4 className="text-[#8B4513] dark:text-[#D4AF37] font-semibold text-lg mb-4">
+                  {stepItem.subtitle}
+                </h4>
+                <p className="text-[#5D4E42] dark:text-[#C4B8AD] leading-relaxed font-light text-base md:text-lg">
+                  {stepItem.description}
+                </p>
+                
+                {stepItem.step === 1 && (
+                  <button 
+                    onClick={onOpenCustomizer}
+                    className="mt-8 px-6 py-3 rounded-full bg-[#2A0818] text-[#D4AF37] dark:bg-[#D4AF37] dark:text-[#2A0818] font-bold text-xs uppercase tracking-widest hover:scale-105 transition-transform"
+                  >
+                    Start Customizing
+                  </button>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

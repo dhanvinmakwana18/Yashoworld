@@ -4,13 +4,16 @@ import App from './App.tsx';
 import './index.css';
 import { DevModeProvider } from './hooks/useDevMode';
 import { HelmetProvider } from 'react-helmet-async';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <DevModeProvider>
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
-    </DevModeProvider>
+    <ErrorBoundary>
+      <DevModeProvider>
+        <HelmetProvider>
+          <App />
+        </HelmetProvider>
+      </DevModeProvider>
+    </ErrorBoundary>
   </StrictMode>,
 );

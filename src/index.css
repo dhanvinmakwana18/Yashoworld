@@ -32,6 +32,11 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
   html, body {
     background-color: var(--bg-canvas);
     color: var(--text-primary);
@@ -41,9 +46,18 @@
     text-rendering: optimizeSpeed;
   }
 
+  @media (pointer: fine) {
+    body, a, button, input, select, textarea, [role="button"] {
+      cursor: none !important;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
   button, a, input, select, textarea, [role="button"] {
     touch-action: manipulation;
-    cursor: pointer;
   }
 }
 

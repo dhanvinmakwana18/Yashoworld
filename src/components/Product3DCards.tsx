@@ -110,7 +110,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
     selectedCategory !== 'All' || selectedClarity !== 'All' || activeSearchQuery.trim() !== '';
 
   return (
-    <section id="products" aria-label="Curated Resin Art Collection" className="py-20 lg:py-28 relative overflow-hidden">
+    <section id="products" aria-label="Curated Resin Art Collection" className="w-full h-screen min-h-[800px] overflow-y-auto snap-start py-20 lg:py-28 relative">
       {/* Subtle Warm Lighting Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-to-tr from-[#D4AF37]/10 via-[#FAF7F2]/20 to-transparent dark:from-[#D4AF37]/5 dark:via-[#660033]/20 rounded-full blur-3xl pointer-events-none" />
 

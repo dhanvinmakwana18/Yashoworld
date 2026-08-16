@@ -77,7 +77,7 @@ export const StoryAbout: React.FC = () => {
   ];
 
   return (
-    <section id="story" aria-label="Our Story and Craftsmanship" className="py-24 relative overflow-hidden bg-[#FAF7F2] dark:bg-[#231C18]">
+    <section id="story" aria-label="Our Story and Craftsmanship" className="w-full h-screen min-h-[700px] overflow-y-auto snap-start py-24 relative bg-[#FAF7F2] dark:bg-[#231C18]">
       {/* Background Decorative Accent */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#F8E8EE]/50 dark:bg-[#D4A373]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#E8EFE6]/50 dark:bg-[#D8B4E2]/10 rounded-full blur-3xl pointer-events-none" />

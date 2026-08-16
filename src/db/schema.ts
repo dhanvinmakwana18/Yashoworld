@@ -42,6 +42,18 @@ export const products = pgTable('products', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Define the 'testimonials' table
+export const testimonials = pgTable('testimonials', {
+  id: text('id').primaryKey(),
+  author: text('author').notNull(),
+  role: text('role').notNull(),
+  location: text('location').notNull(),
+  content: text('content').notNull(),
+  productOrdered: text('product_ordered').notNull(),
+  rating: integer('rating').notNull().default(5),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const cartItems = pgTable('cart_items', {
   id: serial('id').primaryKey(),
   sessionId: text('session_id').notNull(),

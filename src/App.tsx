@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Lenis from 'lenis';
+
 import { Helmet } from 'react-helmet-async';
 import { animatePageEntrance } from './utils/gsapAnimations';
 import { LuxuryAmbientBackground } from './components/LuxuryAmbientBackground';
@@ -9,6 +9,7 @@ import { StoryAbout } from './components/StoryAbout';
 import { Product3DCards } from './components/Product3DCards';
 import { InteractiveCustomizerModal } from './components/InteractiveCustomizerModal';
 import { ScrollExpand } from './components/ScrollExpand';
+import { ShopByMemory } from './components/ShopByMemory';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { LuxuryGallery } from './components/LuxuryGallery';
 import { OrderProcessTimeline } from './components/OrderProcessTimeline';
@@ -20,6 +21,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { Footer } from './components/Footer';
+import { CustomCursor } from './components/CustomCursor';
 import { LoadingScreen } from './components/LoadingScreen';
 import { Product, CartItem } from './types';
 
@@ -116,32 +118,7 @@ export default function App() {
     fetchCart();
   }, [productsLoading, products]);
 
-  // Lenis Smooth Scroll Setup
-  useEffect(() => {
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
-    if (isTouchDevice) return;
 
-    const lenis = new Lenis({
-      duration: 1.6,
-      easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.5,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    const rafId = requestAnimationFrame(raf);
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
 
   // Theme Toggle Effect
   useEffect(() => {
@@ -371,61 +348,61 @@ export default function App() {
       />
 
       {/* Main Content Sections */}
-      <main ref={mainRef} className="relative z-10">
+      <main ref={mainRef} className="relative z-10 w-full">
         <Hero
           onOpenCustomizer={() => setIsCustomizerOpen(true)}
           isDarkTheme={isDarkTheme}
         />
         <StoryAbout />
 
-        {/* Interactive Scroll Expand Feature Showcase */}
-        <section aria-label="Artisan Resin Mastery Showcase" className="relative w-full overflow-hidden my-4 sm:my-8">
-          <ScrollExpand
-            src="/images/resin_scroll_hero.jpg"
-            alt="Handcrafted Rose & Gold Leaf Resin Art Masterpiece"
-            title="Preserving Life's Golden Moments"
-            scrollHint="Scroll to Unfold the Artistry ↓"
-            useWindowScroll={true}
-            startWidth={50}
-            startHeight={60}
-            startRadius={28}
-            endRadius={0}
-            mediaZoom={1.3}
-            scrollDistance={1.0}
-            holdDistance={0.25}
-            smoothing={0.08}
-            overlayScrim={0.5}
-          >
-            <div className="max-w-2xl px-6 py-8 text-center text-white flex flex-col items-center">
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#F3C06B] mb-3 drop-shadow-md">
-                100% UV-Cured Optical Crystal Resin
-              </span>
-              <h2 className="font-serif-display text-2xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight text-white drop-shadow-lg">
-                Where Delicate Petals Meet Eternal Glass
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base text-[#FAF7F2]/90 leading-relaxed mb-6 max-w-xl font-light drop-shadow-md">
-                Every single bubble is extracted under high-pressure vacuum chambers, ensuring pure clarity that will never yellow or cloud over generations.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <a
-                  href="#products"
-                  className="px-6 py-3 rounded-full bg-[#D4AF37] text-[#2A0818] font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl hover:scale-105"
-                >
-                  Explore The Vault
-                </a>
-                <button
-                  onClick={() => setIsCustomizerOpen(true)}
-                  className="px-6 py-3 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-xs uppercase tracking-widest hover:bg-white/30 transition-all shadow-lg hover:scale-105"
-                >
-                  Create Your Keepsake
-                </button>
-              </div>
+        {/* Scroll Expand showcase - Fixed for snap architecture using a local scroll trap */}
+        <section id="showcase" aria-label="Artisan Resin Mastery Showcase" className="w-full h-screen overflow-y-auto snap-start relative bg-[#120D10]">
+          <div className="h-[200vh] w-full"> {/* Forces an inner scroll area */}
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
+              <ScrollExpand
+                src="/images/bg-collection.jpg"
+                alt="Handcrafted Rose & Gold Leaf Resin Art Masterpiece"
+                title="Preserving Life's Golden Moments"
+                scrollHint="Scroll Inside To Unfold ↓"
+                useWindowScroll={false}
+                startWidth={40}
+                startHeight={50}
+                startRadius={30}
+                endRadius={0}
+                mediaZoom={1.2}
+                scrollDistance={0.8}
+                holdDistance={0.3}
+                smoothing={0.1}
+                overlayScrim={0.5}
+              >
+                <div className="max-w-2xl px-6 py-8 text-center text-white flex flex-col items-center">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#F3C06B] mb-3 drop-shadow-md">
+                    100% UV-Cured Optical Crystal Resin
+                  </span>
+                  <h2 className="font-serif-display text-3xl sm:text-4xl md:text-6xl font-bold mb-4 tracking-tight leading-tight text-white drop-shadow-lg">
+                    Where Delicate Petals <br /> <span className="italic font-light">Meet Eternal Glass</span>
+                  </h2>
+                  <p className="text-sm md:text-base text-[#FAF7F2]/90 leading-relaxed mb-8 max-w-xl font-light drop-shadow-md">
+                    Every single bubble is extracted under high-pressure vacuum chambers, ensuring pure clarity that will never yellow or cloud over generations.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+                    <button
+                      onClick={() => setIsCustomizerOpen(true)}
+                      className="px-8 py-4 rounded-full bg-[#D4AF37] text-[#2A0818] font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl hover:scale-105"
+                    >
+                      Start Customizing
+                    </button>
+                  </div>
+                </div>
+              </ScrollExpand>
             </div>
-          </ScrollExpand>
+          </div>
         </section>
 
+        <ShopByMemory />
+
         {productsLoading ? (
-          <div className="py-24 text-center min-h-[50vh] flex flex-col items-center justify-center">
+          <div className="py-24 text-center h-screen snap-start flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
             <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium font-serif-display">Loading Bespoke Masterpieces...</p>
           </div>
@@ -441,13 +418,41 @@ export default function App() {
             onSearchChange={setSearchQuery}
           />
         )}
+        
         <WhyChooseUs />
-        <LuxuryGallery onOpenCustomizer={() => setIsCustomizerOpen(true)} />
         <OrderProcessTimeline onOpenCustomizer={() => setIsCustomizerOpen(true)} />
         <Testimonials3D />
-        <FAQAccordion />
+        <LuxuryGallery onOpenCustomizer={() => setIsCustomizerOpen(true)} />
         <ContactSection />
       </main>
+
+      {/* Floating Vertical Navigation */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-3">
+        {[
+          { id: 'hero', label: 'Start' },
+          { id: 'story', label: 'Brand Story' },
+          { id: 'showcase', label: 'Showcase' },
+          { id: 'shop-by-memory', label: 'Shop By Memory' },
+          { id: 'products', label: 'Collection' },
+          { id: 'why-us', label: 'Why YashoWorld' },
+          { id: 'process', label: 'How It Works' },
+          { id: 'testimonials', label: 'Stories' },
+          { id: 'custom-order', label: 'Custom Order' },
+          { id: 'contact', label: 'Contact' },
+          { id: 'footer', label: 'Footer' }
+        ].map((item, i) => (
+          <a
+            key={i}
+            href={`#${item.id}`}
+            className="group relative w-[10px] h-[10px] rounded-full border border-[#D4AF37]/50 bg-white/10 backdrop-blur-md transition-all hover:bg-[#D4AF37] shadow-lg"
+            aria-label={`Go to ${item.label}`}
+          >
+            <span className="absolute right-6 top-1/2 -translate-y-1/2 px-2 py-1 bg-black/80 backdrop-blur-sm text-[#F3C06B] text-[10px] uppercase tracking-widest font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-[#D4AF37]/20 shadow-xl">
+              {item.label}
+            </span>
+          </a>
+        ))}
+      </div>
 
       {/* Footer */}
       <Footer />
