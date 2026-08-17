@@ -260,6 +260,30 @@ app.post('/api/orders', upload.single('referenceImage'), async (req, res) => {
       }
     }
     
+    if (!sessionId || !customerName || !email) {
+      return res.status(400).json({ error: 'Missing required customer information' });
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Order must contain at least one item' });
+    }
+    
+    for (const item of items) {
+      if (!item.productId) {
+        return res.status(400).json({ error: 'Invalid product ID' });
+      }
+      const qty = parseInt(item.quantity);
+      if (isNaN(qty) || qty <= 0) {
+        return res.status(400).json({ error: 'Invalid quantity' });
+      }
+    }
+    
     let referenceImageBase64 = null;
     
     // Handle optional file upload
