@@ -6,7 +6,14 @@ import { gallery, products, testimonials, orders, orderItems } from './src/db/sc
 import { desc, eq, asc, and, or, ilike } from 'drizzle-orm';
 import multer from 'multer';
 import fs from 'fs';
+import crypto from 'crypto';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as dbService from './src/services/dbService';
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || 'us-east-1',
+});
 
 if (!process.env.DEVELOPER_SECRET) {
   console.error("ERROR: DEVELOPER_SECRET environment variable is missing.");
@@ -300,7 +307,20 @@ app.post('/api/orders', upload.single('referenceImage'), async (req, res) => {
         return res.status(400).json({ error: 'File is too large. Maximum size is 5MB.' });
       }
       
-      referenceImageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      if (process.env.AWS_S3_BUCKET_NAME) {
+        const ext = req.file.originalname.split('.').pop() || 'jpg';
+        const key = `orders/ref_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        const command = new PutObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: key,
+          Body: req.file.buffer,
+          ContentType: req.file.mimetype,
+        });
+        await s3Client.send(command);
+        referenceImageBase64 = `s3://${process.env.AWS_S3_BUCKET_NAME}/${key}`;
+      } else {
+        referenceImageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      }
     }
     
     // Create the order
@@ -386,7 +406,17 @@ app.get('/api/admin/orders/:id/image', checkAuth, async (req, res) => {
       return res.status(404).json({ error: 'Image not found' });
     }
     
-    res.json({ image: order[0].referenceImage });
+    const referenceImage = order[0].referenceImage;
+    if (referenceImage.startsWith('s3://')) {
+      const parts = referenceImage.replace('s3://', '').split('/');
+      const bucket = parts.shift();
+      const key = parts.join('/');
+      const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+      const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+      return res.json({ image: presignedUrl, isS3: true });
+    }
+    
+    res.json({ image: referenceImage, isS3: false });
   } catch (error) {
     console.error('Error fetching order image:', error);
     res.status(500).json({ error: 'Failed to fetch image' });
