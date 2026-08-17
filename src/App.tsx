@@ -415,16 +415,14 @@ export default function App() {
         />
         <StoryAbout />
 
-        {/* Scroll Expand showcase - Fixed for snap architecture using a local scroll trap */}
-        <section id="showcase" aria-label="Artisan Resin Mastery Showcase" className="w-full min-h-screen relative bg-[#120D10]">
-          <div className="h-[200vh] w-full"> {/* Forces an inner scroll area */}
-            <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
-              <ScrollExpand
-                src="/images/bg-collection.jpg"
-                alt="Handcrafted Rose & Gold Leaf Resin Art Masterpiece"
-                title="Preserving Life's Golden Moments"
-                scrollHint="Scroll Inside To Unfold ↓"
-                useWindowScroll={false}
+        {/* Scroll Expand showcase */}
+        <section id="showcase" aria-label="Artisan Resin Mastery Showcase" className="w-full relative bg-[#120D10]">
+          <ScrollExpand
+            src="/images/bg-collection.jpg"
+            alt="Handcrafted Rose & Gold Leaf Resin Art Masterpiece"
+            title="Preserving Life's Golden Moments"
+            scrollHint="Scroll Down To Unfold ↓"
+            useWindowScroll={true}
                 startWidth={40}
                 startHeight={50}
                 startRadius={30}
@@ -454,9 +452,7 @@ export default function App() {
                     </button>
                   </div>
                 </div>
-              </ScrollExpand>
-            </div>
-          </div>
+            </ScrollExpand>
         </section>
 
         <ShopByMemory />
