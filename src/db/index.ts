@@ -69,10 +69,12 @@ export const initDatabase = () => {
           customizable_options TEXT,
           is_best_seller INTEGER DEFAULT 0,
           is_new_arrival INTEGER DEFAULT 0,
+          is_active INTEGER DEFAULT 1,
           resin_clarity TEXT,
           image_data TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+        ALTER TABLE products ADD COLUMN IF NOT EXISTS is_active INTEGER DEFAULT 1;
         CREATE TABLE IF NOT EXISTS testimonials (
           id TEXT PRIMARY KEY,
           author TEXT NOT NULL,
@@ -91,6 +93,25 @@ export const initDatabase = () => {
           customizations TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS orders (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          customer_name TEXT,
+          email TEXT,
+          total_amount INTEGER NOT NULL,
+          status TEXT NOT NULL DEFAULT 'pending',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS order_items (
+          id SERIAL PRIMARY KEY,
+          order_id INTEGER NOT NULL,
+          product_id TEXT NOT NULL,
+          quantity INTEGER NOT NULL DEFAULT 1,
+          price_at_time INTEGER NOT NULL,
+          customizations TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        ALTER TABLE orders ADD COLUMN IF NOT EXISTS reference_image TEXT;
       `).catch(console.error);
 
       global._drizzleDb = drizzlePglite(client, { schema });

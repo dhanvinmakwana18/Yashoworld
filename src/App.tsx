@@ -19,6 +19,7 @@ import { ContactSection } from './components/ContactSection';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
+import { AdminOrdersPanel } from './components/AdminOrdersPanel';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { Footer } from './components/Footer';
 import { CustomCursor } from './components/CustomCursor';
@@ -31,6 +32,7 @@ export default function App() {
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -39,6 +41,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (toast: Omit<ToastMessage, 'id'>) => {
@@ -77,9 +80,12 @@ export default function App() {
             isNewArrival: p.isNewArrival === 1 || p.isNewArrival === true,
           }));
           setProducts(data);
+        } else {
+          setProductsError('Unable to load our collection at this moment. Please try again later.');
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProductsError('Unable to load our collection at this moment. Please try again later.');
       } finally {
         setProductsLoading(false);
       }
@@ -237,6 +243,60 @@ export default function App() {
       }
     } catch (error) {
       console.error('Failed to clear cart:', error);
+    }
+  };
+
+  const handleCheckout = async (customerName: string, email: string, totalAmount: number, referenceImage: File | null) => {
+    try {
+      const sessionId = getSessionId();
+      const itemsPayload = cartItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        priceAtTime: item.product.price,
+        customizations: item.customizationDetails
+      }));
+
+      const formData = new FormData();
+      formData.append('sessionId', sessionId);
+      formData.append('customerName', customerName);
+      formData.append('email', email);
+      formData.append('totalAmount', totalAmount.toString());
+      formData.append('items', JSON.stringify(itemsPayload));
+      
+      if (referenceImage) {
+        formData.append('referenceImage', referenceImage);
+      }
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        body: formData
+        // Note: Do not set Content-Type header when using FormData, browser will set it with boundary
+      });
+
+      if (res.ok) {
+        setCartItems([]); // Cart is cleared on backend automatically by the new order route
+        addToast({
+          type: 'success',
+          title: 'Order Placed!',
+          description: 'Thank you. We have received your bespoke order request.',
+        });
+        return true;
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Order Failed',
+          description: 'There was a problem placing your order. Please try again.',
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      addToast({
+        type: 'error',
+        title: 'Network Error',
+        description: 'Unable to reach the server. Please check your connection.',
+      });
+      return false;
     }
   };
 
@@ -406,6 +466,16 @@ export default function App() {
             <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium font-serif-display">Loading Bespoke Masterpieces...</p>
           </div>
+        ) : productsError ? (
+          <div className="py-24 text-center h-screen snap-start flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
+            <p className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium font-serif-display text-xl mb-4">{productsError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-6 py-2 rounded-full border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
         ) : (
           <Product3DCards
             products={products}
@@ -455,9 +525,15 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenAdmin={() => setIsAdminOpen(true)} />
 
       {/* Modals & Drawers */}
+      <AdminOrdersPanel
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
+        products={products}
+      />
+
       <InteractiveCustomizerModal
         isOpen={isCustomizerOpen}
         onClose={() => setIsCustomizerOpen(false)}
@@ -485,6 +561,7 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
+        onCheckout={handleCheckout}
       />
 
       <WishlistDrawer

@@ -3,7 +3,11 @@ import { motion } from 'motion/react';
 import { Instagram, MessageCircle, Mail, ArrowUp } from 'lucide-react';
 import { openEmailClient } from '../lib/emailUtils';
 
-export const Footer: React.FC = () => {
+export interface FooterProps {
+  onOpenAdmin?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -138,7 +142,13 @@ export const Footer: React.FC = () => {
             <div className="flex flex-col items-center gap-1 text-center font-serif-body tracking-wider">
               <p>© 2026 YashoWorld.</p>
               <p>All Rights Reserved.</p>
-              <p className="mt-4 text-[10px] text-[#A6998E]">Designed & Developed by</p>
+              <button 
+                onClick={onOpenAdmin}
+                className="text-[10px] text-[#A6998E]/50 hover:text-[#D4AF37] transition-colors mt-1"
+              >
+                Admin Dashboard
+              </button>
+              <p className="mt-2 text-[10px] text-[#A6998E]">Designed & Developed by</p>
               <a
                 href="#"
                 onClick={(e) => {

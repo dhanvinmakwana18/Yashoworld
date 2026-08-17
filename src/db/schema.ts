@@ -37,6 +37,7 @@ export const products = pgTable('products', {
   customizableOptions: text('customizable_options'), // JSON stringified array
   isBestSeller: integer('is_best_seller').default(0), // 0 or 1 for boolean
   isNewArrival: integer('is_new_arrival').default(0),
+  isActive: integer('is_active').default(1), // 1 for active, 0 for inactive
   resinClarity: text('resin_clarity'),
   imageData: text('image_data'), // Base64 image data
   createdAt: timestamp('created_at').defaultNow(),
@@ -66,4 +67,39 @@ export const cartItems = pgTable('cart_items', {
 // Define relations for 'users'
 export const usersRelations = relations(users, ({ many }) => ({
   // Define relations here if user-owned records are added later
+}));
+
+// Define the 'orders' table
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  sessionId: text('session_id').notNull(),
+  customerName: text('customer_name'),
+  email: text('email'),
+  totalAmount: integer('total_amount').notNull(),
+  status: text('status').notNull().default('pending'), // pending, completed, cancelled
+  referenceImage: text('reference_image'), // Base64 image string for custom orders
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Define the 'order_items' table
+export const orderItems = pgTable('order_items', {
+  id: serial('id').primaryKey(),
+  orderId: integer('order_id').notNull(),
+  productId: text('product_id').notNull(),
+  quantity: integer('quantity').notNull().default(1),
+  priceAtTime: integer('price_at_time').notNull(),
+  customizations: text('customizations'), // Store as JSON string or JSONB
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Relations for orders and orderItems
+export const ordersRelations = relations(orders, ({ many }) => ({
+  items: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
 }));
