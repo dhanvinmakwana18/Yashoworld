@@ -42,7 +42,7 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="w-full h-screen min-h-[800px] overflow-y-auto snap-start py-24 relative bg-[#F5EFE6] dark:bg-[#1C1815]">
+    <section id="contact" className="w-full min-h-screen min-h-[800px] py-24 relative bg-[#F5EFE6] dark:bg-[#1C1815]">
       {/* Background Lighting */}
       <div className="absolute top-1/3 left-10 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
 

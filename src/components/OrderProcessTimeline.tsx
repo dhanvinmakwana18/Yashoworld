@@ -93,7 +93,7 @@ export const OrderProcessTimeline: React.FC<OrderProcessTimelineProps> = ({ onOp
     <section 
       id="process" 
       ref={containerRef}
-      className="relative w-full h-screen overflow-y-auto snap-start text-[#FAF7F2]"
+      className="relative w-full min-h-screen text-[#FAF7F2]"
     >
       {/* Cinematic Background Image */}
       <div className="absolute inset-0 z-0">

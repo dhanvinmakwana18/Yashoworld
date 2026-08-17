@@ -139,7 +139,7 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
   };
 
   return (
-    <section id="custom-order" aria-label="Bespoke Custom Orders Gallery" className="w-full h-screen min-h-[800px] overflow-y-auto snap-start py-24 relative bg-[#FAF7F2] dark:bg-[#120D10]">
+    <section id="custom-order" aria-label="Bespoke Custom Orders Gallery" className="w-full min-h-screen min-h-[800px] py-24 relative bg-[#FAF7F2] dark:bg-[#120D10]">
       {/* Dynamic Glow Orbs */}
       <div className="absolute top-1/4 left-0 w-72 h-72 bg-[#F8E8EE]/50 dark:bg-[#D4A373]/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-[#E8EFE6]/50 dark:bg-[#D8B4E2]/10 rounded-full blur-[120px] pointer-events-none" />

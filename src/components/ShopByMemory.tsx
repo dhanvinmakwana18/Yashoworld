@@ -35,7 +35,7 @@ const memories = [
 
 export const ShopByMemory: React.FC = () => {
   return (
-    <section className="relative w-full h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden snap-start">
+    <section className="relative w-full min-h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 

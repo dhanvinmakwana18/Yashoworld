@@ -416,7 +416,7 @@ export default function App() {
         <StoryAbout />
 
         {/* Scroll Expand showcase - Fixed for snap architecture using a local scroll trap */}
-        <section id="showcase" aria-label="Artisan Resin Mastery Showcase" className="w-full h-screen overflow-y-auto snap-start relative bg-[#120D10]">
+        <section id="showcase" aria-label="Artisan Resin Mastery Showcase" className="w-full min-h-screen relative bg-[#120D10]">
           <div className="h-[200vh] w-full"> {/* Forces an inner scroll area */}
             <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
               <ScrollExpand
@@ -462,12 +462,12 @@ export default function App() {
         <ShopByMemory />
 
         {productsLoading ? (
-          <div className="py-24 text-center h-screen snap-start flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
+          <div className="py-24 text-center h-screen flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
             <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium font-serif-display">Loading Bespoke Masterpieces...</p>
           </div>
         ) : productsError ? (
-          <div className="py-24 text-center h-screen snap-start flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
+          <div className="py-24 text-center h-screen flex flex-col items-center justify-center bg-[#FAF7F2] dark:bg-[#120D10]">
             <p className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium font-serif-display text-xl mb-4">{productsError}</p>
             <button 
               onClick={() => window.location.reload()} 

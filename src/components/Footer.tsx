@@ -13,7 +13,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
   };
 
   return (
-    <div id="footer" className="relative z-10 w-full h-screen min-h-[600px] flex flex-col justify-end snap-start bg-[#120D10]">
+    <div id="footer" className="relative z-10 w-full min-h-screen min-h-[600px] flex flex-col justify-end bg-[#120D10]">
       {/* Refined Gold Accent Divider Line */}
       <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-transparent absolute top-0" />
 

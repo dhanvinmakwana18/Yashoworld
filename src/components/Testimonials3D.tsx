@@ -80,7 +80,7 @@ export const Testimonials3D: React.FC = () => {
   );
 
   return (
-    <section ref={targetRef} id="testimonials" className="relative w-full h-screen min-h-[700px] flex flex-col justify-center overflow-hidden snap-start">
+    <section ref={targetRef} id="testimonials" className="relative w-full min-h-screen min-h-[700px] flex flex-col justify-center overflow-hidden">
       {/* Cinematic Background Image */}
       <div className="absolute inset-0 z-0">
         <img 

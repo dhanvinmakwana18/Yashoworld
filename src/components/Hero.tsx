@@ -11,7 +11,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenCustomizer }) => {
   return (
     <section
       aria-label="Hero Showcase"
-      className="relative w-full h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden snap-start"
+      className="relative w-full min-h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden"
     >
       {/* Cinematic Background Image */}
       <div 
