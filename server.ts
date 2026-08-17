@@ -9,6 +9,8 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import * as dbService from './src/services/dbService';
 
 const s3Client = new S3Client({
@@ -23,13 +25,32 @@ if (!process.env.DEVELOPER_SECRET) {
 
 const app = express();
 
-const PORT = 3001;
+app.use(helmet({ contentSecurityPolicy: false }));
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200, // Reasonable global limit
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+// Apply global limiter only to API routes, excluding /health (defined above it)
+app.get('/health', (req, res) => res.status(200).json({ status: "ok" }));
+app.use('/api/', globalLimiter);
+
+const PORT = process.env.PORT || 3001;
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
+const orderLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // Max 10 orders per 15 minutes per IP
+  message: { error: 'Too many orders created. Please wait before submitting another.' }
+});
 
 // Security Authentication Middleware
 const checkAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -254,7 +275,7 @@ app.delete('/api/cart/session/:sessionId', async (req, res) => {
 });
 
 // Order Endpoints
-app.post('/api/orders', upload.single('referenceImage'), async (req, res) => {
+app.post('/api/orders', orderLimiter, upload.single('referenceImage'), async (req, res) => {
   try {
     let { sessionId, customerName, email, totalAmount, items } = req.body;
     
@@ -566,9 +587,36 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Unhandled Server Error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
+
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+
+  const gracefulShutdown = () => {
+    console.log('Received shutdown signal, closing server...');
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      if (global._postgresPool) {
+        await global._postgresPool.end();
+        console.log('Database pool closed.');
+      }
+      process.exit(0);
+    });
+    
+    // Force shutdown if it takes too long
+    setTimeout(() => {
+      console.error('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
 }
 
 startServer();
