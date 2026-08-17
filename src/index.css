@@ -33,7 +33,6 @@
   }
 
   html {
-    scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
   }
 
@@ -47,9 +46,7 @@
   }
 
   @media (pointer: fine) {
-    body, a, button, input, select, textarea, [role="button"] {
-      cursor: none !important;
-    }
+    /* Native cursors restored */
   }
 
   h1, h2, h3, h4, h5, h6 {
