@@ -423,15 +423,15 @@ export default function App() {
             title="Preserving Life's Golden Moments"
             scrollHint="Scroll Down To Unfold ↓"
             useWindowScroll={true}
-                startWidth={40}
-                startHeight={50}
-                startRadius={30}
-                endRadius={0}
-                mediaZoom={1.2}
-                scrollDistance={0.8}
-                holdDistance={0.3}
-                smoothing={0.1}
-                overlayScrim={0.5}
+            startWidth={42}
+            startHeight={58}
+            startRadius={24}
+            endRadius={0}
+            mediaZoom={1.35}
+            scrollDistance={1.2}
+            holdDistance={0.35}
+            smoothing={0.1}
+            overlayScrim={0.45}
               >
                 <div className="max-w-2xl px-6 py-8 text-center text-white flex flex-col items-center">
                   <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#F3C06B] mb-3 drop-shadow-md">
