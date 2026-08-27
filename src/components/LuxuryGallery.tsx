@@ -195,24 +195,33 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   onClick={() => setActiveItem(item)}
-                  className="glass-panel p-3 rounded-3xl border border-white/80 dark:border-[#D4A373]/25 overflow-hidden shadow-xl transition-all duration-500 cursor-pointer group relative flex flex-col justify-between"
+                  className="bg-white dark:bg-[#1A0B12] p-4 border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group relative flex flex-col justify-between"
                 >
-                  {/* Floating Glass Frame Wrap */}
-                  <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-[#FAF7F2] to-white dark:from-[#4D0026] dark:to-[#660033] flex flex-col items-center justify-center p-6 text-center border-b border-[#660033]/10">
+                  {/* Gallery Frame Wrap */}
+                  <div className="relative overflow-hidden aspect-[4/5] bg-[#FAF7F2] dark:bg-[#2A0818] flex flex-col items-center justify-center group-hover:scale-[1.02] transition-transform duration-700">
+                    
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="z-10 p-6 text-center">
+                         <h3 className="font-serif-display text-2xl font-bold text-[#8B5E3C] dark:text-[#D4A373] mb-4">{item.title}</h3>
+                      </div>
+                    )}
 
-                    <div className="z-10">
-                       <h3 className="font-serif-display text-2xl font-bold text-[#D4A373] mb-4">{item.title}</h3>
-                    </div>
-
-                    {/* Golden Sparkle Overlay on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#660033]/70 via-transparent to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                    {/* Editorial Fade Overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-between p-5">
                       <div className="flex items-center justify-between">
-                        <span className="px-3 py-1 rounded-full glass-gold text-white text-[10px] font-bold uppercase tracking-wider">
+                        <span className="px-3 py-1 bg-white/90 text-[#1A0B12] text-[9px] font-bold uppercase tracking-widest backdrop-blur-sm">
                           {item.category}
                         </span>
                         <button
                           onClick={(e) => handleLike(item.id, e)}
-                          className="p-2 rounded-full glass-panel text-white hover:text-red-400 transition-colors flex items-center gap-1 text-xs"
+                          className="p-2 rounded-full bg-white/10 text-white hover:text-rose-400 transition-colors flex items-center gap-1 text-xs backdrop-blur-md border border-white/20"
                         >
                           <Heart className="w-4 h-4 fill-current text-rose-500" />
                           <span>{currentLikes}</span>
@@ -220,14 +229,14 @@ export const LuxuryGallery: React.FC<LuxuryGalleryProps> = ({ onOpenCustomizer }
                       </div>
 
                       <div>
-                        <h4 className="font-serif-display text-lg font-bold text-white mb-1">
+                        <h4 className="font-serif-display text-xl font-medium text-white mb-2">
                           {item.title}
                         </h4>
-                        <p className="text-xs text-white/80 line-clamp-2 mb-3">
+                        <p className="text-xs text-white/90 line-clamp-2 mb-4 font-light">
                           {item.story}
                         </p>
-                        <div className="flex items-center gap-1 text-xs font-semibold text-[#D4A373]">
-                          <ZoomIn className="w-4 h-4" /> Expand Memory Story
+                        <div className="flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold text-white/80">
+                          <ZoomIn className="w-3.5 h-3.5" /> View Memory
                         </div>
                       </div>
                     </div>
