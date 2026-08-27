@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sparkles,
@@ -44,7 +44,22 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
   const [sortBy, setSortBy] = useState<'featured' | 'price-low' | 'price-high' | 'rating'>('featured');
   const [selectedClarity, setSelectedClarity] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<'search' | 'categories' | 'refine' | false>(false);
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsSectionVisible(entry.isIntersecting);
+      if (!entry.isIntersecting) {
+        setIsFilterDrawerOpen(false); // Close drawers if we scroll away
+      }
+    }, { threshold: 0, rootMargin: "-100px 0px -100px 0px" });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const activeSearchQuery = searchQuery !== undefined ? searchQuery : localSearchQuery;
 
@@ -110,7 +125,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
     selectedCategory !== 'All' || selectedClarity !== 'All' || activeSearchQuery.trim() !== '';
 
   return (
-    <section id="products" aria-label="Curated Resin Art Collection" className="w-full min-h-screen min-h-[800px] py-20 lg:py-28 relative">
+    <section ref={sectionRef} id="products" aria-label="Curated Resin Art Collection" className="w-full min-h-screen min-h-[800px] py-20 lg:py-28 relative">
       {/* Subtle Warm Lighting Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-to-tr from-[#D4AF37]/10 via-[#FAF7F2]/20 to-transparent dark:from-[#D4AF37]/5 dark:via-[#660033]/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -132,135 +147,235 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
           </p>
         </div>
 
-        {/* Master Filter Toolbar */}
-        <div className="glass-panel p-4 sm:p-5 rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 shadow-xl mb-8">
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-            {/* Search Input with quick clear */}
-            <div className="relative w-full lg:w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B4513] dark:text-[#F3C06B]" />
-              <input
-                type="text"
-                placeholder="Search keepsakes, thalis, frames..."
-                value={activeSearchQuery}
-                onChange={handleSearchInputChange}
-                className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white/90 dark:bg-[#2A0818]/90 border border-[#D4AF37]/30 text-xs sm:text-sm text-[#660033] dark:text-[#FAF7F2] placeholder-[#8B5E3C]/60 dark:placeholder-[#E8D8CD]/50 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
-              {activeSearchQuery && (
-                <button
-                  onClick={() => {
-                    setLocalSearchQuery('');
-                    if (onSearchChange) onSearchChange('');
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8B5E3C] dark:text-[#D4AF37] hover:opacity-75"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Category Pills Scroller */}
-            <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar flex-1 lg:max-w-2xl">
-              {categories.map((cat) => {
-                const isActive = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border shrink-0 ${
-                      isActive
-                        ? 'bg-[#8B4513] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] border-[#8B4513] dark:border-[#D4AF37] shadow-sm scale-105'
-                        : 'bg-white/80 dark:bg-[#3D0B23]/70 text-[#660033] dark:text-[#E8D8CD] border-[#D4AF37]/20 hover:border-[#D4AF37]/50 hover:bg-[#FAF7F2]'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Utility Controls (Sort & View Mode) */}
-            <div className="flex items-center justify-between lg:justify-end gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#D4AF37]/20">
-              {/* Sort selector */}
-              <div className="flex items-center gap-1.5">
-                <SlidersHorizontal className="w-3.5 h-3.5 text-[#8B4513] dark:text-[#F3C06B]" />
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  aria-label="Sort products"
-                  className="px-2.5 py-2 rounded-xl bg-white/90 dark:bg-[#2A0818]/90 border border-[#D4AF37]/30 text-xs font-bold text-[#660033] dark:text-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
-                >
-                  <option value="featured">Curated Order</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
-                </select>
-              </div>
-
-              {/* Grid / List view toggle */}
-              <div className="flex items-center gap-1 bg-white/80 dark:bg-[#2A0818]/80 p-1 rounded-xl border border-[#D4AF37]/20">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  aria-label="Grid View"
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    viewMode === 'grid'
-                      ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#2A0818] shadow-xs'
-                      : 'text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23]'
-                  }`}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  aria-label="List View"
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    viewMode === 'list'
-                      ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#2A0818] shadow-xs'
-                      : 'text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23]'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Filter Badges & Quick Stats */}
-          <div className="mt-3 pt-3 border-t border-[#D4AF37]/15 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[#8B5E3C] dark:text-[#D4AF37] font-semibold">
-                Showing <strong className="text-[#660033] dark:text-[#FAF7F2]">{filteredProducts.length}</strong> creations
-              </span>
-
-              {/* Clarity Filter Chips */}
-              <div className="hidden sm:flex items-center gap-1.5 ml-2 pl-2 border-l border-[#D4AF37]/20">
-                <span className="text-[11px] text-[#8B5E3C]/80 dark:text-[#D4AF37]/80">Clarity:</span>
-                {clarities.map((clr) => (
-                  <button
-                    key={clr}
-                    onClick={() => setSelectedClarity(clr)}
-                    className={`text-[10px] px-2 py-0.5 rounded-md transition-colors ${
-                      selectedClarity === clr
-                        ? 'bg-[#D4AF37] text-[#2A0818] font-bold shadow-xs'
-                        : 'text-[#660033] dark:text-[#E8D8CD] hover:bg-white/50'
-                    }`}
-                  >
-                    {clr}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {hasActiveFilters && (
+        {/* Floating Discovery Pill (Concept C1) */}
+        <AnimatePresence>
+          {isSectionVisible && (
+            <motion.div 
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center bg-white/90 dark:bg-[#1A0B12]/95 backdrop-blur-md border border-[#8B5E3C]/20 dark:border-[#D4AF37]/30 shadow-2xl rounded-full px-2 py-2 gap-1"
+            >
               <button
-                onClick={clearFilters}
-                className="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1"
+                onClick={() => setIsFilterDrawerOpen(isFilterDrawerOpen === 'search' ? false : 'search')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                  isFilterDrawerOpen === 'search' 
+                    ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#1A0B12] shadow-md'
+                    : 'text-[#8B5E3C] dark:text-[#D4AF37] hover:bg-[#8B5E3C]/10 dark:hover:bg-[#D4AF37]/10'
+                }`}
               >
-                <X className="w-3 h-3" />
-                <span>Reset All Filters</span>
+                <Search className="w-4 h-4" />
+                <span className="hidden sm:inline">Search</span>
               </button>
-            )}
-          </div>
-        </div>
+
+              <div className="w-px h-6 bg-[#8B5E3C]/20 dark:bg-[#D4AF37]/20 mx-1" />
+
+              <button
+                onClick={() => setIsFilterDrawerOpen(isFilterDrawerOpen === 'categories' ? false : 'categories')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                  isFilterDrawerOpen === 'categories' || (selectedCategory !== 'All' && !isFilterDrawerOpen)
+                    ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#1A0B12] shadow-md'
+                    : 'text-[#8B5E3C] dark:text-[#D4AF37] hover:bg-[#8B5E3C]/10 dark:hover:bg-[#D4AF37]/10'
+                }`}
+              >
+                <List className="w-4 h-4" />
+                <span className="hidden sm:inline">{selectedCategory !== 'All' ? selectedCategory : 'Categories'}</span>
+              </button>
+
+              <div className="w-px h-6 bg-[#8B5E3C]/20 dark:bg-[#D4AF37]/20 mx-1" />
+
+              <button
+                onClick={() => setIsFilterDrawerOpen(isFilterDrawerOpen === 'refine' ? false : 'refine')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                  isFilterDrawerOpen === 'refine' || (selectedClarity !== 'All' && !isFilterDrawerOpen)
+                    ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#1A0B12] shadow-md'
+                    : 'text-[#8B5E3C] dark:text-[#D4AF37] hover:bg-[#8B5E3C]/10 dark:hover:bg-[#D4AF37]/10'
+                }`}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span className="hidden sm:inline">Refine</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Discovery Drawers Overlay */}
+        <AnimatePresence>
+          {isFilterDrawerOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsFilterDrawerOpen(false)}
+                className="fixed inset-0 z-40 bg-black/20 dark:bg-black/40 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-24 lg:bottom-28 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md bg-white dark:bg-[#1A0B12] border border-[#8B5E3C]/20 dark:border-[#D4AF37]/30 shadow-2xl rounded-3xl overflow-hidden flex flex-col"
+              >
+                {/* Drawer Header */}
+                <div className="px-6 py-4 border-b border-[#8B5E3C]/10 dark:border-[#D4AF37]/10 flex items-center justify-between bg-[#FAF7F2] dark:bg-[#2A0818]">
+                  <h3 className="font-serif-display text-lg font-bold text-[#660033] dark:text-[#FAF7F2]">
+                    {isFilterDrawerOpen === 'search' && 'Search Catalog'}
+                    {isFilterDrawerOpen === 'categories' && 'Select Category'}
+                    {isFilterDrawerOpen === 'refine' && 'Refine & Sort'}
+                  </h3>
+                  <button onClick={() => setIsFilterDrawerOpen(false)} className="p-2 text-[#8B5E3C] dark:text-[#D4AF37] hover:bg-black/5 rounded-full transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Drawer Body - Search */}
+                {isFilterDrawerOpen === 'search' && (
+                  <div className="p-6">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B4513] dark:text-[#F3C06B]" />
+                      <input
+                        type="text"
+                        autoFocus
+                        placeholder="Search keepsakes, frames..."
+                        value={activeSearchQuery}
+                        onChange={handleSearchInputChange}
+                        className="w-full pl-12 pr-10 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2A0818] border border-[#D4AF37]/30 text-base text-[#660033] dark:text-[#FAF7F2] placeholder-[#8B5E3C]/60 dark:placeholder-[#E8D8CD]/50 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      />
+                      {activeSearchQuery && (
+                        <button
+                          onClick={() => {
+                            setLocalSearchQuery('');
+                            if (onSearchChange) onSearchChange('');
+                          }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8B5E3C] dark:text-[#D4AF37] hover:opacity-75"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Drawer Body - Categories */}
+                {isFilterDrawerOpen === 'categories' && (
+                  <div className="p-4 max-h-[50vh] overflow-y-auto custom-scrollbar">
+                    <div className="flex flex-col gap-1">
+                      {categories.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setSelectedCategory(cat);
+                            setIsFilterDrawerOpen(false);
+                          }}
+                          className={`px-4 py-3 text-left rounded-xl text-sm font-bold transition-all ${
+                            selectedCategory === cat
+                              ? 'bg-[#8B5E3C] text-white dark:bg-[#D4AF37] dark:text-[#1A0B12]'
+                              : 'text-[#660033] dark:text-[#E8D8CD] hover:bg-[#FAF7F2] dark:hover:bg-[#3D0B23]'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Drawer Body - Refine & Sort */}
+                {isFilterDrawerOpen === 'refine' && (
+                  <div className="p-6 max-h-[50vh] overflow-y-auto custom-scrollbar flex flex-col gap-6">
+                    
+                    {/* Sort */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B5E3C] dark:text-[#D4AF37] mb-3">Sort Order</h4>
+                      <div className="flex flex-col gap-2">
+                        {[
+                          { val: 'featured', label: 'Curated Order' },
+                          { val: 'price-low', label: 'Price: Low to High' },
+                          { val: 'price-high', label: 'Price: High to Low' },
+                          { val: 'rating', label: 'Top Rated' }
+                        ].map(opt => (
+                          <button
+                            key={opt.val}
+                            onClick={() => { setSortBy(opt.val as any); }}
+                            className={`px-4 py-2 text-left rounded-lg text-sm transition-all border ${
+                              sortBy === opt.val
+                                ? 'border-[#8B5E3C] bg-[#FAF7F2] text-[#8B5E3C] dark:border-[#D4AF37] dark:bg-[#3D0B23] dark:text-[#D4AF37] font-bold'
+                                : 'border-transparent text-[#660033] dark:text-[#E8D8CD] hover:bg-black/5 dark:hover:bg-white/5'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="w-full h-px bg-[#8B5E3C]/10 dark:bg-[#D4AF37]/10" />
+
+                    {/* Resin Clarity */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B5E3C] dark:text-[#D4AF37] mb-3">Resin Clarity</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {clarities.map((clr) => (
+                          <button
+                            key={clr}
+                            onClick={() => setSelectedClarity(clr)}
+                            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors border ${
+                              selectedClarity === clr
+                                ? 'border-[#8B5E3C] bg-[#8B5E3C] text-white dark:border-[#D4AF37] dark:bg-[#D4AF37] dark:text-[#1A0B12]'
+                                : 'border-[#8B5E3C]/20 dark:border-[#D4AF37]/30 text-[#660033] dark:text-[#E8D8CD] hover:border-[#8B5E3C] dark:hover:border-[#D4AF37]'
+                            }`}
+                          >
+                            {clr}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="w-full h-px bg-[#8B5E3C]/10 dark:bg-[#D4AF37]/10" />
+
+                    {/* View Mode */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B5E3C] dark:text-[#D4AF37] mb-3">Layout</h4>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setViewMode('grid')}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors border ${
+                            viewMode === 'grid'
+                              ? 'border-[#8B5E3C] bg-[#FAF7F2] text-[#8B5E3C] dark:border-[#D4AF37] dark:bg-[#3D0B23] dark:text-[#D4AF37] font-bold'
+                              : 'border-transparent text-[#660033] dark:text-[#E8D8CD] hover:bg-black/5 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <LayoutGrid className="w-4 h-4" /> Grid
+                        </button>
+                        <button
+                          onClick={() => setViewMode('list')}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors border ${
+                            viewMode === 'list'
+                              ? 'border-[#8B5E3C] bg-[#FAF7F2] text-[#8B5E3C] dark:border-[#D4AF37] dark:bg-[#3D0B23] dark:text-[#D4AF37] font-bold'
+                              : 'border-transparent text-[#660033] dark:text-[#E8D8CD] hover:bg-black/5 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <List className="w-4 h-4" /> List
+                        </button>
+                      </div>
+                    </div>
+
+                    {hasActiveFilters && (
+                      <button
+                        onClick={clearFilters}
+                        className="mt-2 py-3 rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 text-sm font-bold w-full transition-colors hover:bg-rose-100 dark:hover:bg-rose-500/20"
+                      >
+                        Reset All Filters
+                      </button>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Product Cards Container */}
         <div
@@ -283,19 +398,19 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                     layout
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="gsap-stagger-item glass-panel p-4 sm:p-5 rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 shadow-md hover:shadow-xl transition-all flex flex-col sm:flex-row items-center gap-5 group"
+                    exit={{ opacity: 0, y: -15 }}
+                    className="gsap-stagger-item product-card w-full flex flex-col sm:flex-row gap-4 sm:gap-6 bg-white dark:bg-[#1A0B12] p-4 border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 hover:shadow-xl transition-shadow duration-300 relative group"
                   >
-                    {/* List Thumbnail */}
+                    {/* Image */}
                     <div
                       onClick={() => onQuickView(product)}
-                      className="w-full sm:w-48 h-44 rounded-xl overflow-hidden bg-[#FAF7F2] dark:bg-[#3D0B23] shrink-0 relative cursor-pointer border border-[#D4AF37]/20"
+                      className="relative w-full sm:w-48 sm:h-48 aspect-square sm:aspect-auto shrink-0 overflow-hidden bg-[#FAF7F2] dark:bg-[#2A0818] cursor-pointer"
                     >
                       {product.imageData || product.image ? (
                         <img
                           src={product.imageData || product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
@@ -305,63 +420,63 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                           </h4>
                         </div>
                       )}
-                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#8B5E3C]/90 text-white text-[9px] font-bold uppercase backdrop-blur-xs">
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#FAF7F2]/90 dark:bg-[#1A0B12]/90 text-[#8B5E3C] dark:text-[#D4AF37] text-[9px] font-bold uppercase tracking-widest backdrop-blur-sm border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20">
                         {product.resinClarity}
                       </span>
                     </div>
 
                     {/* List Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between h-full w-full">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between h-full w-full py-1">
                       <div>
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-[11px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] uppercase tracking-[0.15em] opacity-90">
                             {product.category}
                           </span>
                           <button
                             onClick={() => onToggleWishlist(product.id)}
                             aria-label="Toggle Wishlist"
-                            className="p-1.5 rounded-full hover:bg-[#FAF7F2] dark:hover:bg-[#4D0026] text-[#660033] dark:text-[#FAF7F2]"
+                            className={`p-2 rounded-full transition-all duration-300 ${isWishlisted ? 'text-rose-500 bg-rose-50 dark:bg-rose-950/30' : 'text-[#660033]/60 dark:text-[#FAF7F2]/60 hover:text-rose-500 hover:bg-[#FAF7F2] dark:hover:bg-[#2A0818]'}`}
                           >
                             <Heart
-                              className={`w-4 h-4 ${isWishlisted ? 'text-rose-500 fill-current' : ''}`}
+                              className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`}
                             />
                           </button>
                         </div>
 
                         <h3
                           onClick={() => onQuickView(product)}
-                          className="font-serif-display text-lg sm:text-xl font-bold text-[#660033] dark:text-[#FAF7F2] hover:text-[#8B4513] dark:hover:text-[#F3C06B] cursor-pointer transition-colors"
+                          className="font-serif-display text-lg md:text-xl font-medium text-[#2A0818] dark:text-[#FAF7F2] hover:text-[#8B4513] cursor-pointer transition-colors"
                         >
                           {product.name}
                         </h3>
 
-                        <p className="text-xs text-[#4A3728] dark:text-[#E8D8CD] line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-xs text-[#4A3728]/80 dark:text-[#E8D8CD]/70 line-clamp-2 mt-2 font-light leading-relaxed">
                           {product.description}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
-                          <div className="flex items-center gap-1 text-amber-600 dark:text-[#F3C06B]">
-                            <Star className="w-3.5 h-3.5 fill-current" />
-                            <span className="font-bold">{product.rating}</span>
-                            <span className="text-[#8B5E3C] dark:text-[#E8D8CD]/70">
+                        <div className="flex flex-wrap items-center gap-3 mt-4 text-[11px]">
+                          <div className="flex items-center gap-1 opacity-80">
+                            <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+                            <span className="font-medium text-[#2A0818] dark:text-[#FAF7F2]">{product.rating}</span>
+                            <span className="text-[#2A0818]/60 dark:text-[#FAF7F2]/60">
                               ({product.reviewsCount} reviews)
                             </span>
                           </div>
-                          <span className="text-[#D4AF37]">✦</span>
-                          <span className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium">
+                          <span className="text-[#D4AF37]/50">✦</span>
+                          <span className="text-[#8B5E3C] dark:text-[#D4AF37]/80 font-medium">
                             {product.dimensions}
                           </span>
                         </div>
                       </div>
 
                       {/* Bottom Pricing & Actions */}
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#D4AF37]/15">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-5 pt-4 border-t border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 gap-4">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-serif-display text-xl font-bold text-[#8B4513] dark:text-[#F3C06B]">
+                          <span className="font-serif-display text-xl font-bold text-[#660033] dark:text-[#F3C06B]">
                             ₹{product.price.toLocaleString('en-IN')}
                           </span>
                           {product.originalPrice && (
-                            <span className="text-xs text-[#660033]/40 dark:text-[#FAF7F2]/40 line-through">
+                            <span className="text-[11px] text-[#2A0818]/40 dark:text-[#FAF7F2]/40 line-through">
                               ₹{product.originalPrice.toLocaleString('en-IN')}
                             </span>
                           )}
@@ -370,14 +485,13 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => onQuickView(product)}
-                            className="px-3 py-2 rounded-xl bg-white/80 dark:bg-[#3D0B23] border border-[#D4AF37]/30 text-xs font-bold text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] flex items-center gap-1.5 transition-colors"
+                            className="px-5 py-2.5 bg-white dark:bg-[#1A0B12] border border-[#8B5E3C]/20 dark:border-[#D4AF37]/30 text-[10px] font-bold uppercase tracking-[0.2em] text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] dark:hover:bg-[#2A0818] transition-colors"
                           >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Quick View</span>
+                            Quick View
                           </button>
                           <button
                             onClick={() => onAddToCart(product)}
-                            className="px-4 py-2 rounded-xl bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] text-xs font-bold uppercase tracking-wider hover:opacity-90 flex items-center gap-1.5 transition-all shadow-md"
+                            className="px-6 py-2.5 bg-[#FAF7F2] dark:bg-[#2A0818] text-[#8B5E3C] dark:text-[#D4AF37] border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#1A0B12] transition-colors flex items-center gap-2"
                           >
                             <ShoppingBag className="w-3.5 h-3.5" />
                             <span>Add to Cart</span>
@@ -389,7 +503,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                 );
               }
 
-              // Standard Grid Card
+              // Standard Grid Card (Luxury Upgrade)
               return (
                 <motion.div
                   key={product.id}
@@ -398,138 +512,124 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.25 }}
-                  className="gsap-stagger-item product-card glass-panel rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 overflow-hidden shadow-lg hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group relative"
+                  className="gsap-stagger-item product-card bg-white dark:bg-[#1A0B12] rounded-none border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col group relative"
                 >
-                  {/* Badges */}
-                  <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
+                  {/* Badges - Minimalist */}
+                  <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
                     {product.isBestSeller && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#8B4513] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                        <Sparkles className="w-2.5 h-2.5" /> Best Seller
+                      <span className="px-3 py-1 bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#1A0B12] text-[9px] font-bold uppercase tracking-widest shadow-sm">
+                        Best Seller
                       </span>
                     )}
                     {product.isNewArrival && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#FAF7F2] dark:bg-[#3D0B23] text-[#8B4513] dark:text-[#F3C06B] border border-[#D4AF37]/30 text-[9px] font-bold uppercase tracking-wider shadow-xs">
+                      <span className="px-3 py-1 bg-[#FAF7F2]/90 dark:bg-[#3D0B23]/90 text-[#8B4513] dark:text-[#F3C06B] border border-[#D4AF37]/30 text-[9px] font-bold uppercase tracking-widest backdrop-blur-sm">
                         New In
                       </span>
                     )}
                   </div>
 
-                  {/* Wishlist Toggle Button */}
+                  {/* Wishlist Toggle Button - Elegant */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggleWishlist(product.id);
                     }}
                     aria-label={`Save ${product.name} to wishlist`}
-                    className={`absolute top-2.5 right-2.5 z-20 p-2 rounded-full glass-panel shadow-md transition-all ${
+                    className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 dark:bg-[#1A0B12]/90 shadow-sm border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 backdrop-blur-sm transition-all duration-300 ${
                       isWishlisted
-                        ? 'text-rose-500 fill-rose-500 scale-110'
+                        ? 'text-rose-500'
                         : 'text-[#660033] dark:text-[#FAF7F2] hover:text-rose-500'
                     }`}
                   >
-                    <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
+                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                   </button>
 
-                  {/* Image Container */}
+                  {/* Image Container - Aspect Square for Gallery Feel */}
                   <div
                     onClick={() => onQuickView(product)}
-                    className="relative aspect-[4/3] overflow-hidden bg-[#FAF7F2] dark:bg-[#3D0B23] flex flex-col items-center justify-center cursor-pointer border-b border-[#D4AF37]/20"
+                    className="relative aspect-square overflow-hidden bg-[#FAF7F2] dark:bg-[#2A0818] cursor-pointer"
                   >
                     {product.imageData || product.image ? (
                       <img
                         src={product.imageData || product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="lazy"
                       />
                     ) : (
-                      <div className="p-4 text-center">
-                        <h4 className="font-serif-display text-base font-bold text-[#8B4513] dark:text-[#F3C06B] mb-1">
+                      <div className="flex w-full h-full flex-col items-center justify-center p-6 text-center">
+                        <h4 className="font-serif-display text-lg font-bold text-[#8B4513] dark:text-[#F3C06B] mb-2">
                           {product.name}
                         </h4>
-                        <p className="text-[11px] text-[#4A3728] dark:text-[#E8D8CD] opacity-70 line-clamp-2">
+                        <p className="text-xs text-[#4A3728] dark:text-[#E8D8CD] opacity-70 line-clamp-3">
                           {product.description}
                         </p>
                       </div>
                     )}
 
-                    {/* Quick action overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3 gap-2">
+                    {/* Quick View Overlay (Luxury Fade) */}
+                    <div className="absolute inset-0 bg-black/20 dark:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-[2px]">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onQuickView(product);
                         }}
-                        className="px-3 py-1.5 rounded-xl glass-panel text-xs font-bold text-white flex items-center gap-1 hover:bg-white hover:text-[#660033] transition-colors shadow-lg"
+                        className="px-6 py-2.5 bg-white dark:bg-[#1A0B12] text-[#660033] dark:text-[#F3C06B] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#FAF7F2] transition-colors shadow-lg"
                       >
-                        <Eye className="w-3.5 h-3.5" /> Quick View
+                        Quick View
                       </button>
                     </div>
                   </div>
 
-                  {/* Body Content */}
-                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider">
-                          {product.category}
-                        </span>
-                        <span className="text-[9px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] bg-[#FAF7F2] dark:bg-[#3D0B23] px-2 py-0.5 rounded-full border border-[#D4AF37]/20">
-                          {product.resinClarity}
-                        </span>
+                  {/* Body Content - Strict Hierarchy */}
+                  <div className="p-5 flex flex-col flex-1 bg-white dark:bg-[#1A0B12]">
+                    <div className="flex-1">
+                      <div className="text-[10px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] uppercase tracking-[0.15em] mb-1.5 opacity-90">
+                        {product.category}
                       </div>
 
                       <h3
                         onClick={() => onQuickView(product)}
-                        className="font-serif-display text-sm sm:text-base font-bold text-[#660033] dark:text-[#FAF7F2] line-clamp-1 group-hover:text-[#8B4513] dark:group-hover:text-[#F3C06B] transition-colors cursor-pointer mb-1.5"
+                        className="font-serif-display text-base md:text-lg font-medium text-[#2A0818] dark:text-[#FAF7F2] line-clamp-1 mb-2 group-hover:text-[#8B5E3C] transition-colors cursor-pointer"
                       >
                         {product.name}
                       </h3>
 
-                      <div className="flex items-center gap-1 mb-3">
-                        <div className="flex items-center text-amber-600 dark:text-[#F3C06B]">
-                          <Star className="w-3.5 h-3.5 fill-current" />
-                          <span className="text-xs font-bold text-[#660033] dark:text-[#FAF7F2] ml-1">
-                            {product.rating}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-[#4A3728] dark:text-[#E8D8CD] font-medium">
-                          ({product.reviewsCount})
-                        </span>
-                      </div>
+                      <p className="text-xs text-[#4A3728]/80 dark:text-[#E8D8CD]/70 line-clamp-2 mb-4 font-light leading-relaxed">
+                        {product.description}
+                      </p>
                     </div>
 
-                    {/* Price and Cart */}
-                    <div className="pt-3 border-t border-[#D4AF37]/20 flex items-center justify-between gap-2">
-                      <div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="font-serif-display text-base sm:text-lg font-bold text-[#8B4513] dark:text-[#F3C06B]">
-                            ₹{product.price.toLocaleString('en-IN')}
+                    <div className="flex items-end justify-between mt-auto">
+                      <div className="flex flex-col">
+                        {product.originalPrice && (
+                          <span className="text-[11px] text-[#2A0818]/40 dark:text-[#FAF7F2]/40 line-through mb-0.5">
+                            ₹{product.originalPrice.toLocaleString('en-IN')}
                           </span>
-                          {product.originalPrice && (
-                            <span className="text-[11px] text-[#660033]/40 dark:text-[#FAF7F2]/40 line-through">
-                              ₹{product.originalPrice.toLocaleString('en-IN')}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold block">
-                          Handcrafted in India
+                        )}
+                        <span className="font-serif-display text-lg font-bold text-[#660033] dark:text-[#F3C06B]">
+                          ₹{product.price.toLocaleString('en-IN')}
                         </span>
                       </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToCart(product);
-                        }}
-                        className="p-2.5 rounded-xl bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] hover:bg-[#660033] dark:hover:bg-[#FAF7F2] transition-all shadow-md active:scale-95 shrink-0"
-                        title="Add to Cart"
-                        aria-label={`Add ${product.name} to cart`}
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                      </button>
+                      
+                      {/* Artisan Signature / Reviews */}
+                      <div className="flex items-center gap-1 opacity-80">
+                        <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+                        <span className="text-[11px] font-medium text-[#2A0818] dark:text-[#FAF7F2]">
+                          {product.rating} <span className="opacity-50">({product.reviewsCount})</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Full Width Elegant Add to Cart */}
+                  <button
+                    onClick={() => onAddToCart(product)}
+                    className="w-full py-3.5 bg-[#FAF7F2] dark:bg-[#2A0818] text-[#8B5E3C] dark:text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] border-t border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#1A0B12] transition-colors duration-300 flex items-center justify-center gap-2"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add to Cart</span>
+                  </button>
                 </motion.div>
               );
             })}
