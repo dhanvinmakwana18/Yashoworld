@@ -27,6 +27,10 @@ const app = express();
 
 app.use(helmet({ contentSecurityPolicy: false }));
 
+// Trust the first proxy (e.g. AWS ALB or Nginx on Elastic Beanstalk) 
+// to ensure rate limiting correctly identifies client IPs instead of blocking the proxy itself.
+app.set('trust proxy', 1);
+
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200, // Reasonable global limit
