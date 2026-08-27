@@ -283,19 +283,19 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                     layout
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="gsap-stagger-item glass-panel p-4 sm:p-5 rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 shadow-md hover:shadow-xl transition-all flex flex-col sm:flex-row items-center gap-5 group"
+                    exit={{ opacity: 0, y: -15 }}
+                    className="gsap-stagger-item product-card w-full flex flex-col sm:flex-row gap-4 sm:gap-6 bg-white dark:bg-[#1A0B12] p-4 border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 hover:shadow-xl transition-shadow duration-300 relative group"
                   >
-                    {/* List Thumbnail */}
+                    {/* Image */}
                     <div
                       onClick={() => onQuickView(product)}
-                      className="w-full sm:w-48 h-44 rounded-xl overflow-hidden bg-[#FAF7F2] dark:bg-[#3D0B23] shrink-0 relative cursor-pointer border border-[#D4AF37]/20"
+                      className="relative w-full sm:w-48 sm:h-48 aspect-square sm:aspect-auto shrink-0 overflow-hidden bg-[#FAF7F2] dark:bg-[#2A0818] cursor-pointer"
                     >
                       {product.imageData || product.image ? (
                         <img
                           src={product.imageData || product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
@@ -305,63 +305,63 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                           </h4>
                         </div>
                       )}
-                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#8B5E3C]/90 text-white text-[9px] font-bold uppercase backdrop-blur-xs">
+                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#FAF7F2]/90 dark:bg-[#1A0B12]/90 text-[#8B5E3C] dark:text-[#D4AF37] text-[9px] font-bold uppercase tracking-widest backdrop-blur-sm border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20">
                         {product.resinClarity}
                       </span>
                     </div>
 
                     {/* List Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between h-full w-full">
+                    <div className="flex-1 min-w-0 flex flex-col justify-between h-full w-full py-1">
                       <div>
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-[11px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] uppercase tracking-[0.15em] opacity-90">
                             {product.category}
                           </span>
                           <button
                             onClick={() => onToggleWishlist(product.id)}
                             aria-label="Toggle Wishlist"
-                            className="p-1.5 rounded-full hover:bg-[#FAF7F2] dark:hover:bg-[#4D0026] text-[#660033] dark:text-[#FAF7F2]"
+                            className={`p-2 rounded-full transition-all duration-300 ${isWishlisted ? 'text-rose-500 bg-rose-50 dark:bg-rose-950/30' : 'text-[#660033]/60 dark:text-[#FAF7F2]/60 hover:text-rose-500 hover:bg-[#FAF7F2] dark:hover:bg-[#2A0818]'}`}
                           >
                             <Heart
-                              className={`w-4 h-4 ${isWishlisted ? 'text-rose-500 fill-current' : ''}`}
+                              className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`}
                             />
                           </button>
                         </div>
 
                         <h3
                           onClick={() => onQuickView(product)}
-                          className="font-serif-display text-lg sm:text-xl font-bold text-[#660033] dark:text-[#FAF7F2] hover:text-[#8B4513] dark:hover:text-[#F3C06B] cursor-pointer transition-colors"
+                          className="font-serif-display text-lg md:text-xl font-medium text-[#2A0818] dark:text-[#FAF7F2] hover:text-[#8B4513] cursor-pointer transition-colors"
                         >
                           {product.name}
                         </h3>
 
-                        <p className="text-xs text-[#4A3728] dark:text-[#E8D8CD] line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-xs text-[#4A3728]/80 dark:text-[#E8D8CD]/70 line-clamp-2 mt-2 font-light leading-relaxed">
                           {product.description}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
-                          <div className="flex items-center gap-1 text-amber-600 dark:text-[#F3C06B]">
-                            <Star className="w-3.5 h-3.5 fill-current" />
-                            <span className="font-bold">{product.rating}</span>
-                            <span className="text-[#8B5E3C] dark:text-[#E8D8CD]/70">
+                        <div className="flex flex-wrap items-center gap-3 mt-4 text-[11px]">
+                          <div className="flex items-center gap-1 opacity-80">
+                            <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+                            <span className="font-medium text-[#2A0818] dark:text-[#FAF7F2]">{product.rating}</span>
+                            <span className="text-[#2A0818]/60 dark:text-[#FAF7F2]/60">
                               ({product.reviewsCount} reviews)
                             </span>
                           </div>
-                          <span className="text-[#D4AF37]">✦</span>
-                          <span className="text-[#8B5E3C] dark:text-[#D4AF37] font-medium">
+                          <span className="text-[#D4AF37]/50">✦</span>
+                          <span className="text-[#8B5E3C] dark:text-[#D4AF37]/80 font-medium">
                             {product.dimensions}
                           </span>
                         </div>
                       </div>
 
                       {/* Bottom Pricing & Actions */}
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#D4AF37]/15">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-5 pt-4 border-t border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 gap-4">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-serif-display text-xl font-bold text-[#8B4513] dark:text-[#F3C06B]">
+                          <span className="font-serif-display text-xl font-bold text-[#660033] dark:text-[#F3C06B]">
                             ₹{product.price.toLocaleString('en-IN')}
                           </span>
                           {product.originalPrice && (
-                            <span className="text-xs text-[#660033]/40 dark:text-[#FAF7F2]/40 line-through">
+                            <span className="text-[11px] text-[#2A0818]/40 dark:text-[#FAF7F2]/40 line-through">
                               ₹{product.originalPrice.toLocaleString('en-IN')}
                             </span>
                           )}
@@ -370,14 +370,13 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => onQuickView(product)}
-                            className="px-3 py-2 rounded-xl bg-white/80 dark:bg-[#3D0B23] border border-[#D4AF37]/30 text-xs font-bold text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] flex items-center gap-1.5 transition-colors"
+                            className="px-5 py-2.5 bg-white dark:bg-[#1A0B12] border border-[#8B5E3C]/20 dark:border-[#D4AF37]/30 text-[10px] font-bold uppercase tracking-[0.2em] text-[#660033] dark:text-[#FAF7F2] hover:bg-[#FAF7F2] dark:hover:bg-[#2A0818] transition-colors"
                           >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Quick View</span>
+                            Quick View
                           </button>
                           <button
                             onClick={() => onAddToCart(product)}
-                            className="px-4 py-2 rounded-xl bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] text-xs font-bold uppercase tracking-wider hover:opacity-90 flex items-center gap-1.5 transition-all shadow-md"
+                            className="px-6 py-2.5 bg-[#FAF7F2] dark:bg-[#2A0818] text-[#8B5E3C] dark:text-[#D4AF37] border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#1A0B12] transition-colors flex items-center gap-2"
                           >
                             <ShoppingBag className="w-3.5 h-3.5" />
                             <span>Add to Cart</span>
@@ -389,7 +388,7 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                 );
               }
 
-              // Standard Grid Card
+              // Standard Grid Card (Luxury Upgrade)
               return (
                 <motion.div
                   key={product.id}
@@ -398,138 +397,124 @@ export const Product3DCards: React.FC<Product3DCardsProps> = ({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.25 }}
-                  className="gsap-stagger-item product-card glass-panel rounded-2xl border border-white/80 dark:border-[#D4AF37]/30 overflow-hidden shadow-lg hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group relative"
+                  className="gsap-stagger-item product-card bg-white dark:bg-[#1A0B12] rounded-none border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col group relative"
                 >
-                  {/* Badges */}
-                  <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
+                  {/* Badges - Minimalist */}
+                  <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
                     {product.isBestSeller && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#8B4513] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                        <Sparkles className="w-2.5 h-2.5" /> Best Seller
+                      <span className="px-3 py-1 bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#1A0B12] text-[9px] font-bold uppercase tracking-widest shadow-sm">
+                        Best Seller
                       </span>
                     )}
                     {product.isNewArrival && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#FAF7F2] dark:bg-[#3D0B23] text-[#8B4513] dark:text-[#F3C06B] border border-[#D4AF37]/30 text-[9px] font-bold uppercase tracking-wider shadow-xs">
+                      <span className="px-3 py-1 bg-[#FAF7F2]/90 dark:bg-[#3D0B23]/90 text-[#8B4513] dark:text-[#F3C06B] border border-[#D4AF37]/30 text-[9px] font-bold uppercase tracking-widest backdrop-blur-sm">
                         New In
                       </span>
                     )}
                   </div>
 
-                  {/* Wishlist Toggle Button */}
+                  {/* Wishlist Toggle Button - Elegant */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggleWishlist(product.id);
                     }}
                     aria-label={`Save ${product.name} to wishlist`}
-                    className={`absolute top-2.5 right-2.5 z-20 p-2 rounded-full glass-panel shadow-md transition-all ${
+                    className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 dark:bg-[#1A0B12]/90 shadow-sm border border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 backdrop-blur-sm transition-all duration-300 ${
                       isWishlisted
-                        ? 'text-rose-500 fill-rose-500 scale-110'
+                        ? 'text-rose-500'
                         : 'text-[#660033] dark:text-[#FAF7F2] hover:text-rose-500'
                     }`}
                   >
-                    <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
+                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                   </button>
 
-                  {/* Image Container */}
+                  {/* Image Container - Aspect Square for Gallery Feel */}
                   <div
                     onClick={() => onQuickView(product)}
-                    className="relative aspect-[4/3] overflow-hidden bg-[#FAF7F2] dark:bg-[#3D0B23] flex flex-col items-center justify-center cursor-pointer border-b border-[#D4AF37]/20"
+                    className="relative aspect-square overflow-hidden bg-[#FAF7F2] dark:bg-[#2A0818] cursor-pointer"
                   >
                     {product.imageData || product.image ? (
                       <img
                         src={product.imageData || product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="lazy"
                       />
                     ) : (
-                      <div className="p-4 text-center">
-                        <h4 className="font-serif-display text-base font-bold text-[#8B4513] dark:text-[#F3C06B] mb-1">
+                      <div className="flex w-full h-full flex-col items-center justify-center p-6 text-center">
+                        <h4 className="font-serif-display text-lg font-bold text-[#8B4513] dark:text-[#F3C06B] mb-2">
                           {product.name}
                         </h4>
-                        <p className="text-[11px] text-[#4A3728] dark:text-[#E8D8CD] opacity-70 line-clamp-2">
+                        <p className="text-xs text-[#4A3728] dark:text-[#E8D8CD] opacity-70 line-clamp-3">
                           {product.description}
                         </p>
                       </div>
                     )}
 
-                    {/* Quick action overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3 gap-2">
+                    {/* Quick View Overlay (Luxury Fade) */}
+                    <div className="absolute inset-0 bg-black/20 dark:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center backdrop-blur-[2px]">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onQuickView(product);
                         }}
-                        className="px-3 py-1.5 rounded-xl glass-panel text-xs font-bold text-white flex items-center gap-1 hover:bg-white hover:text-[#660033] transition-colors shadow-lg"
+                        className="px-6 py-2.5 bg-white dark:bg-[#1A0B12] text-[#660033] dark:text-[#F3C06B] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#FAF7F2] transition-colors shadow-lg"
                       >
-                        <Eye className="w-3.5 h-3.5" /> Quick View
+                        Quick View
                       </button>
                     </div>
                   </div>
 
-                  {/* Body Content */}
-                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold text-[#8B4513] dark:text-[#F3C06B] uppercase tracking-wider">
-                          {product.category}
-                        </span>
-                        <span className="text-[9px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] bg-[#FAF7F2] dark:bg-[#3D0B23] px-2 py-0.5 rounded-full border border-[#D4AF37]/20">
-                          {product.resinClarity}
-                        </span>
+                  {/* Body Content - Strict Hierarchy */}
+                  <div className="p-5 flex flex-col flex-1 bg-white dark:bg-[#1A0B12]">
+                    <div className="flex-1">
+                      <div className="text-[10px] font-bold text-[#8B5E3C] dark:text-[#D4AF37] uppercase tracking-[0.15em] mb-1.5 opacity-90">
+                        {product.category}
                       </div>
 
                       <h3
                         onClick={() => onQuickView(product)}
-                        className="font-serif-display text-sm sm:text-base font-bold text-[#660033] dark:text-[#FAF7F2] line-clamp-1 group-hover:text-[#8B4513] dark:group-hover:text-[#F3C06B] transition-colors cursor-pointer mb-1.5"
+                        className="font-serif-display text-base md:text-lg font-medium text-[#2A0818] dark:text-[#FAF7F2] line-clamp-1 mb-2 group-hover:text-[#8B5E3C] transition-colors cursor-pointer"
                       >
                         {product.name}
                       </h3>
 
-                      <div className="flex items-center gap-1 mb-3">
-                        <div className="flex items-center text-amber-600 dark:text-[#F3C06B]">
-                          <Star className="w-3.5 h-3.5 fill-current" />
-                          <span className="text-xs font-bold text-[#660033] dark:text-[#FAF7F2] ml-1">
-                            {product.rating}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-[#4A3728] dark:text-[#E8D8CD] font-medium">
-                          ({product.reviewsCount})
-                        </span>
-                      </div>
+                      <p className="text-xs text-[#4A3728]/80 dark:text-[#E8D8CD]/70 line-clamp-2 mb-4 font-light leading-relaxed">
+                        {product.description}
+                      </p>
                     </div>
 
-                    {/* Price and Cart */}
-                    <div className="pt-3 border-t border-[#D4AF37]/20 flex items-center justify-between gap-2">
-                      <div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="font-serif-display text-base sm:text-lg font-bold text-[#8B4513] dark:text-[#F3C06B]">
-                            ₹{product.price.toLocaleString('en-IN')}
+                    <div className="flex items-end justify-between mt-auto">
+                      <div className="flex flex-col">
+                        {product.originalPrice && (
+                          <span className="text-[11px] text-[#2A0818]/40 dark:text-[#FAF7F2]/40 line-through mb-0.5">
+                            ₹{product.originalPrice.toLocaleString('en-IN')}
                           </span>
-                          {product.originalPrice && (
-                            <span className="text-[11px] text-[#660033]/40 dark:text-[#FAF7F2]/40 line-through">
-                              ₹{product.originalPrice.toLocaleString('en-IN')}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold block">
-                          Handcrafted in India
+                        )}
+                        <span className="font-serif-display text-lg font-bold text-[#660033] dark:text-[#F3C06B]">
+                          ₹{product.price.toLocaleString('en-IN')}
                         </span>
                       </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToCart(product);
-                        }}
-                        className="p-2.5 rounded-xl bg-[#8B5E3C] dark:bg-[#D4AF37] text-white dark:text-[#2A0818] hover:bg-[#660033] dark:hover:bg-[#FAF7F2] transition-all shadow-md active:scale-95 shrink-0"
-                        title="Add to Cart"
-                        aria-label={`Add ${product.name} to cart`}
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                      </button>
+                      
+                      {/* Artisan Signature / Reviews */}
+                      <div className="flex items-center gap-1 opacity-80">
+                        <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37]" />
+                        <span className="text-[11px] font-medium text-[#2A0818] dark:text-[#FAF7F2]">
+                          {product.rating} <span className="opacity-50">({product.reviewsCount})</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Full Width Elegant Add to Cart */}
+                  <button
+                    onClick={() => onAddToCart(product)}
+                    className="w-full py-3.5 bg-[#FAF7F2] dark:bg-[#2A0818] text-[#8B5E3C] dark:text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] border-t border-[#8B5E3C]/10 dark:border-[#D4AF37]/20 hover:bg-[#8B5E3C] hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-[#1A0B12] transition-colors duration-300 flex items-center justify-center gap-2"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add to Cart</span>
+                  </button>
                 </motion.div>
               );
             })}

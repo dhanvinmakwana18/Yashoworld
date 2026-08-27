@@ -24,9 +24,11 @@ import { ToastContainer, ToastMessage } from './components/Toast';
 import { Footer } from './components/Footer';
 import { CustomCursor } from './components/CustomCursor';
 import { LoadingScreen } from './components/LoadingScreen';
+import { NotFound404 } from './components/NotFound404';
 import { Product, CartItem } from './types';
 
 export default function App() {
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
@@ -124,7 +126,17 @@ export default function App() {
     fetchCart();
   }, [productsLoading, products]);
 
-
+  // Check for valid frontend routes
+  useEffect(() => {
+    const validRoutes = ['/', '/products', '/gallery'];
+    const currentPath = window.location.pathname;
+    
+    // Ignore /api routes just in case (though Express should handle them)
+    // Ignore /admin as well if there's an admin path? Actually, admin is a modal right now or handled via /
+    if (!currentPath.startsWith('/api/') && !validRoutes.includes(currentPath)) {
+      setIsNotFound(true);
+    }
+  }, []);
 
   // Theme Toggle Effect
   useEffect(() => {
@@ -345,6 +357,10 @@ export default function App() {
     : 'YashoWorld Studio designs elite handcrafted resin art, divine crimson thalis, customized wedding varmala preservation frames, and botanic bookmarks that keep precious memories alive.';
 
   const seoImage = `${window.location.origin}/placeholder.png`;
+
+  if (isNotFound) {
+    return <NotFound404 />;
+  }
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF7F2] dark:bg-[#2A0818] text-[#660033] dark:text-[#FAF7F2] transition-colors duration-300 relative">
